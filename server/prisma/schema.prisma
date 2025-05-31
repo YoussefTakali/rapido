@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id            Int           @id @default(autoincrement())
+  name          String
+  email         String        @unique
+  password      String
+  phoneNumber   String
+  dateOfBirth   DateTime
+  role          Role
+  createdAt     DateTime      @default(now()) 
+
+  userProfiles  UserProfile[]
+  devises       Devis[]       @relation("UserDevis")
+}
+
+model Profile {
+  id                    Int           @id @default(autoincrement())
+  name                  String
+  email                 String
+  phone                 String
+  companyName           String
+  formeJuridique        String
+  capitalSocial         Decimal
+  siret                 String
+  tva                   String
+  rcsOuRm               String
+  adresse               String
+  logo                  String?       // Optional - path/URL to logo image
+  nomAssurance          String
+  montantMobilier       Decimal
+  montantMaxParObjet    Decimal
+  franchise             Decimal
+  pourcentageAcompte    Decimal
+  bic                   String
+  iban                  String
+  pdfCgv                String?       // Optional - path/URL to PDF file
+
+  userProfiles  UserProfile[]
+  devises       Devis[]       @relation("ProfileDevis")
+}
+
+model UserProfile {
+  userId     Int
+  profileId  Int
+
+  user       User    @relation(fields: [userId], references: [id])
+  profile    Profile @relation(fields: [profileId], references: [id])
+
+  @@id([userId, profileId])
+}
+
+model Devis {
+  id         Int      @id @default(autoincrement())
+  title      String
+  date       DateTime @default(now())
+
+  userId     Int
+  user       User     @relation("UserDevis", fields: [userId], references: [id])
+
+  profileId  Int
+  profile    Profile  @relation("ProfileDevis", fields: [profileId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
