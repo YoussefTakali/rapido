@@ -1,0 +1,186 @@
+
+<div class="controls-container">
+  <div class="left-controls">
+    <label for="itemsPerPage">Items per page:</label>
+    <select id="itemsPerPage" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+      <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
+    </select>
+  </div>
+<button (click)="goToAddDevis()">Add Devis</button>
+
+  <div class="right-controls">
+    <div class="search-bar">
+      <input
+        type="text"
+        placeholder="Search by client, address or status"
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()" />
+      <i class="fa fa-search"></i>
+    </div>
+    <button class="filter-btn" title="Filters" (click)="toggleFilter()">
+      <i class="fas fa-filter"></i>
+    </button>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Client</th>
+      <th>Profil</th> <!-- Nouvelle colonne Profil -->
+      <th>Chargement</th>
+      <th>Livraison</th>
+      <th>Prix</th>
+      <th>Statut</th>
+      <th>Téléphone</th>
+      <th style="width: 250px; text-align:left;">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let devis of pagedDevisList()" (click)="selectDevis(devis)">
+      <td>
+        <input type="checkbox" [(ngModel)]="devis.selected" (click)="$event.stopPropagation()" />
+      </td>
+      <td><strong>{{ devis.client.prenom }} {{ devis.client.nom }}</strong></td>
+      <td>{{ devis.profile?.name || '—' }}</td> <!-- Affichage du nom du profil -->
+      <td>{{ formatDate(devis.dateDepart) }} at {{ devis.adresseDepart }}</td>
+      <td>{{ formatDate(devis.dateLivraison) }} at {{ devis.adresseLivraison }}</td>
+      <td>{{ devis.prixDevis }} €</td>
+        <td (click)="startEditingEtat(devis.id, $event)">
+        <ng-container *ngIf="editingEtatDevisId === devis.id; else showEtat">
+            <select
+            [ngModel]="devis.etat"
+            (ngModelChange)="onEtatChange(devis, $event)"
+            (click)="$event.stopPropagation()"
+            (blur)="cancelEditing()"
+            autofocus
+            >
+            <option *ngFor="let etat of etatValues" [value]="etat">
+                {{ mapStatusToLabel(etat) }}
+            </option>
+            </select>
+        </ng-container>
+        <ng-template #showEtat>
+            <span
+            class="status-badge"
+            [ngClass]="{
+                'status-brouillon': devis.etat === 'BROUILLON',
+                'status-archive': devis.etat === 'ARCHIVE',
+                'status-gagne': devis.etat === 'GAGNE',
+                'status-perdu': devis.etat === 'PERDU',
+                'status-envoyee': devis.etat === 'ENVOYEE',
+                'status-en-cours': devis.etat === 'EN_COURS'
+            }"
+            >
+            {{ mapStatusToLabel(devis.etat) }}
+            </span>
+        </ng-template>
+        </td>
+
+      <td>{{ devis.client.telephone }}</td>
+      <td>
+        <button (click)="editDevis(devis); $event.stopPropagation()" title="Edit">
+          <i class="fas fa-pen"></i>
+        </button>
+        <button (click)="deleteDevis(devis); $event.stopPropagation()" title="Delete">
+          <i class="fas fa-trash"></i>
+        </button>
+        <button (click)="viewDevis(devis); $event.stopPropagation()" title="View">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="pagination">
+  <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Prev</button>
+
+  <button
+    *ngFor="let page of [].constructor(totalPages()); let i = index"
+    [class.active]="currentPage === (i + 1)"
+    (click)="goToPage(i + 1)"
+  >
+    {{ i + 1 }}
+  </button>
+
+  <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages()">Next</button>
+</div>
+
+<!-- Filter Modal -->
+<div class="filter-modal" *ngIf="showFilter">
+  <div class="filter-header">
+    <h2>🔍 Advanced Filters</h2>
+    <button class="close-btn" (click)="showFilter = false">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <div class="filter-content">
+    <h3>Filtres</h3>
+
+    <!-- PRICE RANGE SLIDER -->
+    <div class="filter-group">
+      <label>Prix (€)</label>
+<ngx-slider
+  [(value)]="filterMinPrice"
+  [(highValue)]="filterMaxPrice"
+  [options]="priceSliderOptions"
+  (userChangeEnd)="onSliderChange()"
+></ngx-slider>
+      <div class="price-values">
+        <span>Min: {{ filterMinPrice || 0 }} €</span>
+        <span>Max: {{ filterMaxPrice || 100000 }} €</span>
+      </div>
+    </div>
+<div class="filter-group">
+  <label>Profils</label>
+  <div class="profile-tags">
+    <div 
+      *ngFor="let profile of profiles"
+      class="profile-tag"
+      [class.selected]="selectedProfileIds.includes(profile.id)"
+      (click)="toggleProfileSelection(profile.id)"
+      tabindex="0"
+      (keydown.enter)="toggleProfileSelection(profile.id)"
+      role="checkbox"
+      [attr.aria-checked]="selectedProfileIds.includes(profile.id)"
+    >
+      {{ profile.name }}
+    </div>
+  </div>
+</div>
+    <div class="filter-section">
+      <label>🚚 Date de départ</label>
+      <div class="filter-inputs">
+        <input type="date" [(ngModel)]="filterDepartFrom" />
+        <span>→</span>
+        <input type="date" [(ngModel)]="filterDepartTo" />
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <label>📦 Date de livraison</label>
+      <div class="filter-inputs">
+        <input type="date" [(ngModel)]="filterLivraisonFrom" />
+        <span>→</span>
+        <input type="date" [(ngModel)]="filterLivraisonTo" />
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <label>🗓️ Date de création</label>
+      <div class="filter-inputs">
+        <input type="date" [(ngModel)]="filterCreatedFrom" />
+        <span>→</span>
+        <input type="date" [(ngModel)]="filterCreatedTo" />
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <button class="apply-btn" (click)="applyFilters()">Apply</button>
+      <button class="reset-btn" (click)="resetFilters()">Reset</button>
+    </div>
+  </div>
+</div>

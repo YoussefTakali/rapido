@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { User } from 'src/app/models/User';
 import { SidebarService } from 'src/app/services/sidebar.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-main-layout',
@@ -11,8 +13,11 @@ export class MainLayoutComponent implements OnInit {
   currentTime: string = '';
   currentDate: string = '';
   constructor(private sidebarService: SidebarService) {}
-  username: string = localStorage.getItem('firstname') + ' ' + localStorage.getItem('lastname');
-  onSidebarToggle(isVisible: boolean) {
+  user: User = JSON.parse(localStorage.getItem('user') || '{}');
+  username: string =  this.user.name
+imageUrl: string = this.user && this.user.profilePicture
+  ? `${environment.apiBaseUrl}/uploads/profile-pictures/${this.user.profilePicture}`
+  : 'assets/images/default-profile.png';  onSidebarToggle(isVisible: boolean) {
     this.isSidebarVisible = isVisible;
     this.sidebarService.toggleSidebar(isVisible); // 👈 broadcast to everyone
   }

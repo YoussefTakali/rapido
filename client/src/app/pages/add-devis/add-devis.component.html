@@ -1,0 +1,529 @@
+<div class="devis-form-container">
+  <!-- Progress Bar -->
+  <div class="progress-bar">
+    <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+  </div>
+  <div class="step-indicator">
+    Step {{ currentStep }} of {{ totalSteps }} ({{ getProgressPercentage() | number:'1.0-0' }}%)
+  </div>
+
+  <!-- Step 1: Client Selection and Volume -->
+  <div *ngIf="currentStep === 1" class="form-step">
+    <h2>Client Information & Volume</h2>
+    <form [formGroup]="clientForm">
+      
+      <!-- Profile Selection -->
+      <div class="form-group">
+        <label for="profileId">Select Profile *</label>
+        <select id="profileId" formControlName="profileId" class="form-control" 
+                [class.is-invalid]="clientForm.get('profileId')?.invalid && clientForm.get('profileId')?.touched">
+          <option value="">Choose a profile</option>
+          <option *ngFor="let profile of profiles" [value]="profile.id">
+            {{ profile.name }}
+          </option>
+        </select>
+        <div *ngIf="clientForm.get('profileId')?.invalid && clientForm.get('profileId')?.touched" 
+             class="invalid-feedback">
+          <span *ngIf="clientForm.get('profileId')?.errors?.['required']">Profile is required</span>
+        </div>
+      </div>
+
+      <!-- Volume -->
+      <div class="form-group">
+        <label for="volume">Volume (m³) *</label>
+        <input 
+          type="number" 
+          id="volume" 
+          formControlName="volume" 
+          class="form-control"
+          [class.is-invalid]="clientForm.get('volume')?.invalid && clientForm.get('volume')?.touched"
+          step="0.1"
+          min="0.1"
+          placeholder="Enter volume">
+        <div *ngIf="clientForm.get('volume')?.invalid && clientForm.get('volume')?.touched" 
+             class="invalid-feedback">
+          <span *ngIf="clientForm.get('volume')?.errors?.['required']">Volume is required</span>
+          <span *ngIf="clientForm.get('volume')?.errors?.['min']">Volume must be at least 0.1 m³</span>
+        </div>
+      </div>
+
+      <!-- Client Selection Toggle -->
+      <div class="form-group">
+        <div class="client-toggle">
+          <button 
+            type="button" 
+            class="btn-toggle" 
+            [class.active]="!isAddingNewClient"
+            (click)="isAddingNewClient = false; toggleNewClient()">
+            Add New Client
+          </button>
+          <button 
+            type="button" 
+            class="btn-toggle" 
+            [class.active]="isAddingNewClient"
+            (click)="isAddingNewClient = true; toggleNewClient()">
+            Select Existing Client
+          </button>
+        </div>
+      </div>
+
+      <!-- Existing Client Selection -->
+      <div *ngIf="!isAddingNewClient" class="form-group">
+        <label for="clientId">Select Client *</label>
+        <select id="clientId" formControlName="clientId" class="form-control"
+                [class.is-invalid]="clientForm.get('clientId')?.invalid && clientForm.get('clientId')?.touched">
+          <option value="">Choose a client</option>
+          <option *ngFor="let client of clients" [value]="client.id">
+            {{ client.prenom }} {{ client.nom }} - {{ client.email }}
+          </option>
+        </select>
+        <div *ngIf="clientForm.get('clientId')?.invalid && clientForm.get('clientId')?.touched" 
+             class="invalid-feedback">
+          <span *ngIf="clientForm.get('clientId')?.errors?.['required']">Client selection is required</span>
+        </div>
+      </div>
+
+      <!-- New Client Form -->
+      <div *ngIf="isAddingNewClient" class="new-client-form">
+        <h3>New Client Information</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nom">Last Name *</label>
+            <input 
+              type="text" 
+              id="nom" 
+              formControlName="nom" 
+              class="form-control"
+              [class.is-invalid]="clientForm.get('nom')?.invalid && clientForm.get('nom')?.touched"
+              placeholder="Enter last name">
+            <div *ngIf="clientForm.get('nom')?.invalid && clientForm.get('nom')?.touched" 
+                 class="invalid-feedback">
+              <span *ngIf="clientForm.get('nom')?.errors?.['required']">Last name is required</span>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="prenom">First Name *</label>
+            <input 
+              type="text" 
+              id="prenom" 
+              formControlName="prenom" 
+              class="form-control"
+              [class.is-invalid]="clientForm.get('prenom')?.invalid && clientForm.get('prenom')?.touched"
+              placeholder="Enter first name">
+            <div *ngIf="clientForm.get('prenom')?.invalid && clientForm.get('prenom')?.touched" 
+                 class="invalid-feedback">
+              <span *ngIf="clientForm.get('prenom')?.errors?.['required']">First name is required</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email" 
+            class="form-control"
+            [class.is-invalid]="clientForm.get('email')?.invalid && clientForm.get('email')?.touched"
+            placeholder="Enter email address">
+          <div *ngIf="clientForm.get('email')?.invalid && clientForm.get('email')?.touched" 
+               class="invalid-feedback">
+            <span *ngIf="clientForm.get('email')?.errors?.['required']">Email is required</span>
+            <span *ngIf="clientForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="telephone">Phone *</label>
+          <input 
+            type="tel" 
+            id="telephone" 
+            formControlName="telephone" 
+            class="form-control"
+            [class.is-invalid]="clientForm.get('telephone')?.invalid && clientForm.get('telephone')?.touched"
+            placeholder="Enter phone number">
+          <div *ngIf="clientForm.get('telephone')?.invalid && clientForm.get('telephone')?.touched" 
+               class="invalid-feedback">
+            <span *ngIf="clientForm.get('telephone')?.errors?.['required']">Phone number is required</span>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Step 2: Departure Details -->
+  <div *ngIf="currentStep === 2" class="form-step">
+    <h2>Departure Details</h2>
+    <form [formGroup]="departForm">
+      
+      <div class="form-group">
+        <label for="adresseDepart">Departure Address *</label>
+        <input 
+          type="text" 
+          id="adresseDepart" 
+          formControlName="adresseDepart" 
+          class="form-control"
+          [class.is-invalid]="departForm.get('adresseDepart')?.invalid && departForm.get('adresseDepart')?.touched"
+          placeholder="Enter departure address">
+        <div *ngIf="departForm.get('adresseDepart')?.invalid && departForm.get('adresseDepart')?.touched" 
+             class="invalid-feedback">
+          <span *ngIf="departForm.get('adresseDepart')?.errors?.['required']">Address is required</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="typeLogementDepart">Housing Type *</label>
+          <select id="typeLogementDepart" formControlName="typeLogementDepart" class="form-control"
+                  [class.is-invalid]="departForm.get('typeLogementDepart')?.invalid && departForm.get('typeLogementDepart')?.touched">
+            <option value="">Select type</option>
+            <option value="APPARTEMENT">Apartment</option>
+            <option value="MAISON">House</option>
+            <option value="BUREAU">Office</option>
+          </select>
+          <div *ngIf="departForm.get('typeLogementDepart')?.invalid && departForm.get('typeLogementDepart')?.touched" 
+               class="invalid-feedback">
+            <span *ngIf="departForm.get('typeLogementDepart')?.errors?.['required']">Housing type is required</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="etageDepart">Floor *</label>
+          <input 
+            type="number" 
+            id="etageDepart" 
+            formControlName="etageDepart" 
+            class="form-control"
+            [class.is-invalid]="departForm.get('etageDepart')?.invalid && departForm.get('etageDepart')?.touched"
+            min="0"
+            placeholder="Floor number">
+          <div *ngIf="departForm.get('etageDepart')?.invalid && departForm.get('etageDepart')?.touched" 
+               class="invalid-feedback">
+            <span *ngIf="departForm.get('etageDepart')?.errors?.['required']">Floor is required</span>
+            <span *ngIf="departForm.get('etageDepart')?.errors?.['min']">Minimum value is 0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="ascenseurDepart">Elevator *</label>
+          <select id="ascenseurDepart" formControlName="ascenseurDepart" class="form-control"
+                  [class.is-invalid]="departForm.get('ascenseurDepart')?.invalid && departForm.get('ascenseurDepart')?.touched">
+            <option value="">Select elevator type</option>
+            <option value="SANS_ASCENSEUR">No Elevator</option>
+            <option value="TYPE1">Type 1</option>
+            <option value="TYPE2">Type 2</option>
+            <option value="TYPE3">Type 3</option>
+          </select>
+          <div *ngIf="departForm.get('ascenseurDepart')?.invalid && departForm.get('ascenseurDepart')?.touched" 
+               class="invalid-feedback">
+            <span *ngIf="departForm.get('ascenseurDepart')?.errors?.['required']">Elevator selection is required</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="distancePortageDepart">Carrying Distance *</label>
+          <select id="distancePortageDepart" formControlName="distancePortageDepart" class="form-control"
+                  [class.is-invalid]="departForm.get('distancePortageDepart')?.invalid && departForm.get('distancePortageDepart')?.touched">
+            <option value="">Select distance</option>
+            <option value="TYPE1">0-10m</option>
+            <option value="TYPE2">10-20m</option>
+            <option value="TYPE3">20-50m</option>
+            <option value="TYPE4">50m+</option>
+          </select>
+          <div *ngIf="departForm.get('distancePortageDepart')?.invalid && departForm.get('distancePortageDepart')?.touched" 
+               class="invalid-feedback">
+            <span *ngIf="departForm.get('distancePortageDepart')?.errors?.['required']">Distance is required</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="dateDepart">Departure Date *</label>
+        <input 
+          type="datetime-local" 
+          id="dateDepart" 
+          formControlName="dateDepart" 
+          class="form-control"
+          [class.is-invalid]="departForm.get('dateDepart')?.invalid && departForm.get('dateDepart')?.touched">
+        <div *ngIf="departForm.get('dateDepart')?.invalid && departForm.get('dateDepart')?.touched" 
+             class="invalid-feedback">
+          <span *ngIf="departForm.get('dateDepart')?.errors?.['required']">Date is required</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input 
+            type="checkbox" 
+            formControlName="monteMeubleDepart">
+          Furniture Assembly Required at Departure
+        </label>
+      </div>
+    </form>
+  </div>
+
+  <!-- Step 3: Delivery Details -->
+  <div *ngIf="currentStep === 3" class="form-step">
+    <h2>Delivery Details</h2>
+    <form [formGroup]="livraisonForm">
+      
+      <div class="form-group">
+        <label for="adresseLivraison">Delivery Address *</label>
+        <input 
+          type="text" 
+          id="adresseLivraison" 
+          formControlName="adresseLivraison" 
+          class="form-control"
+          [class.is-invalid]="livraisonForm.get('adresseLivraison')?.invalid && livraisonForm.get('adresseLivraison')?.touched"
+          placeholder="Enter delivery address">
+        <div *ngIf="livraisonForm.get('adresseLivraison')?.invalid && livraisonForm.get('adresseLivraison')?.touched" 
+             class="invalid-feedback">
+          <span *ngIf="livraisonForm.get('adresseLivraison')?.errors?.['required']">Address is required</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="typeLogementLivraison">Housing Type *</label>
+          <select id="typeLogementLivraison" formControlName="typeLogementLivraison" class="form-control"
+                  [class.is-invalid]="livraisonForm.get('typeLogementLivraison')?.invalid && livraisonForm.get('typeLogementLivraison')?.touched">
+            <option value="">Select type</option>
+            <option value="APPARTEMENT">Apartment</option>
+            <option value="MAISON">House</option>
+            <option value="BUREAU">Office</option>
+          </select>
+          <div *ngIf="livraisonForm.get('typeLogementLivraison')?.invalid && livraisonForm.get('typeLogementLivraison')?.touched" 
+               class="invalid-feedback">
+            <span *ngIf="livraisonForm.get('typeLogementLivraison')?.errors?.['required']">Housing type is required</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="etageLivraison">Floor *</label>
+          <input 
+            type="number" 
+            id="etageLivraison" 
+            formControlName="etageLivraison" 
+            class="form-control"
+            [class.is-invalid]="livraisonForm.get('etageLivraison')?.invalid && livraisonForm.get('etageLivraison')?.touched"
+            min="0"
+            placeholder="Floor number">
+          <div *ngIf="livraisonForm.get('etageLivraison')?.invalid && livraisonForm.get('etageLivraison')?.touched" 
+               class="invalid-feedback">
+            <span *ngIf="livraisonForm.get('etageLivraison')?.errors?.['required']">Floor is required</span>
+            <span *ngIf="livraisonForm.get('etageLivraison')?.errors?.['min']">Minimum value is 0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="ascenseurLivraison">Elevator *</label>
+          <select id="ascenseurLivraison" formControlName="ascenseurLivraison" class="form-control"
+                  [class.is-invalid]="livraisonForm.get('ascenseurLivraison')?.invalid && livraisonForm.get('ascenseurLivraison')?.touched">
+            <option value="">Select elevator type</option>
+            <option value="SANS_ASCENSEUR">No Elevator</option>
+            <option value="TYPE1">Type 1</option>
+            <option value="TYPE2">Type 2</option>
+            <option value="TYPE3">Type 3</option>
+          </select>
+          <div *ngIf="livraisonForm.get('ascenseurLivraison')?.invalid && livraisonForm.get('ascenseurLivraison')?.touched" 
+               class="invalid-feedback">
+            <span *ngIf="livraisonForm.get('ascenseurLivraison')?.errors?.['required']">Elevator selection is required</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="distancePortageLivraison">Carrying Distance *</label>
+          <select id="distancePortageLivraison" formControlName="distancePortageLivraison" class="form-control"
+                  [class.is-invalid]="livraisonForm.get('distancePortageLivraison')?.invalid && livraisonForm.get('distancePortageLivraison')?.touched">
+            <option value="">Select distance</option>
+            <option value="TYPE1">0-10m</option>
+            <option value="TYPE2">10-20m</option>
+            <option value="TYPE3">20-50m</option>
+            <option value="TYPE4">50m+</option>
+          </select>
+          <div *ngIf="livraisonForm.get('distancePortageLivraison')?.invalid && livraisonForm.get('distancePortageLivraison')?.touched" 
+               class="invalid-feedback">
+            <span *ngIf="livraisonForm.get('distancePortageLivraison')?.errors?.['required']">Distance is required</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="dateLivraison">Delivery Date *</label>
+        <input 
+          type="datetime-local" 
+          id="dateLivraison" 
+          formControlName="dateLivraison" 
+          class="form-control"
+          [class.is-invalid]="livraisonForm.get('dateLivraison')?.invalid && livraisonForm.get('dateLivraison')?.touched">
+        <div *ngIf="livraisonForm.get('dateLivraison')?.invalid && livraisonForm.get('dateLivraison')?.touched" 
+             class="invalid-feedback">
+          <span *ngIf="livraisonForm.get('dateLivraison')?.errors?.['required']">Date is required</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input 
+            type="checkbox" 
+            formControlName="monteMeubleLivraison">
+          Furniture Assembly Required at Delivery
+        </label>
+      </div>
+    </form>
+  </div>
+
+  <!-- Step 4: Options -->
+  <div *ngIf="currentStep === 4" class="form-step">
+    <h2>Additional Options</h2>
+    <div class="alert alert-info">
+      <i class="fas fa-info-circle"></i> Select any additional services you require
+    </div>
+    
+    <div class="options-grid">
+      <div 
+        *ngFor="let option of availableOptions" 
+        class="option-card"
+        [class.selected]="isOptionSelected(option)"
+        (click)="toggleOption(option)">
+        <div class="option-name">{{ option }}</div>
+        <div class="option-check">
+          <span *ngIf="isOptionSelected(option)">✓</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="selected-options" *ngIf="selectedOptions.length > 0">
+      <h3>Selected Options:</h3>
+      <ul>
+        <li *ngFor="let option of selectedOptions">{{ option }}</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Step 5: Summary and Submit -->
+  <div *ngIf="currentStep === 5" class="form-step">
+    <h2>Summary & Submit</h2>
+    
+    <div class="summary-section">
+      <div class="alert alert-success">
+        <i class="fas fa-check-circle"></i> Please review your information before submitting
+      </div>
+      
+      <div class="summary-card">
+        <h3>Client Information</h3>
+        <div class="summary-item">
+          <strong>Client:</strong> 
+          <span *ngIf="!isAddingNewClient">{{ getSelectedClientName() }}</span>
+          <span *ngIf="isAddingNewClient">{{ clientForm.get('prenom')?.value }} {{ clientForm.get('nom')?.value }}</span>
+        </div>
+        <div class="summary-item">
+          <strong>Profile:</strong> {{ getSelectedProfileName() }}
+        </div>
+        <div class="summary-item">
+          <strong>Volume:</strong> {{ formData.volume }} m³
+        </div>
+      </div>
+      
+      <div class="summary-card">
+        <h3>Departure Details</h3>
+        <div class="summary-item">
+          <strong>Address:</strong> {{ formData.adresseDepart }}
+        </div>
+        <div class="summary-item">
+          <strong>Housing Type:</strong> {{ formData.typeLogementDepart }}
+        </div>
+        <div class="summary-item">
+          <strong>Floor:</strong> {{ formData.etageDepart }}
+        </div>
+        <div class="summary-item">
+          <strong>Elevator:</strong> {{ formData.ascenseurDepart }}
+        </div>
+        <div class="summary-item">
+          <strong>Date:</strong> {{ formData.dateDepart | date:'medium' }}
+        </div>
+      </div>
+      
+      <div class="summary-card">
+        <h3>Delivery Details</h3>
+        <div class="summary-item">
+          <strong>Address:</strong> {{ formData.adresseLivraison }}
+        </div>
+        <div class="summary-item">
+          <strong>Housing Type:</strong> {{ formData.typeLogementLivraison }}
+        </div>
+        <div class="summary-item">
+          <strong>Floor:</strong> {{ formData.etageLivraison }}
+        </div>
+        <div class="summary-item">
+          <strong>Elevator:</strong> {{ formData.ascenseurLivraison }}
+        </div>
+        <div class="summary-item">
+          <strong>Date:</strong> {{ formData.dateLivraison | date:'medium' }}
+        </div>
+      </div>
+      
+      <div class="summary-card" *ngIf="selectedOptions.length > 0">
+        <h3>Selected Options</h3>
+        <div class="summary-item">
+          {{ selectedOptions.join(', ') }}
+        </div>
+      </div>
+      
+      <div class="price-section">
+        <div class="calculated-price">
+          <strong>Estimated Price:</strong> €{{ calculatedPrice }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-navigation">
+      <button 
+        type="button" 
+        class="btn btn-secondary" 
+        (click)="previousStep()">
+        Previous
+      </button>
+      
+      <button 
+        type="button" 
+        class="btn btn-primary btn-submit" 
+        (click)="submitForm()"
+        [disabled]="isLoading">
+        <span *ngIf="isLoading">
+          <i class="fas fa-spinner fa-spin"></i> Submitting...
+        </span>
+        <span *ngIf="!isLoading">
+          <i class="fas fa-check"></i> Submit Quote
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Navigation Buttons -->
+  <div class="form-navigation" *ngIf="currentStep < 5">
+    <button 
+      type="button" 
+      class="btn btn-secondary" 
+      (click)="previousStep()"
+      *ngIf="currentStep > 1"
+      [disabled]="isLoading">
+      <i class="fas fa-arrow-left"></i> Previous
+    </button>
+    
+    <button 
+      type="button" 
+      class="btn btn-primary" 
+      (click)="nextStep()"
+      *ngIf="currentStep < totalSteps"
+      [disabled]="!validateCurrentStep() || isLoading">
+      Next <i class="fas fa-arrow-right"></i>
+    </button>
+  </div>
+</div>

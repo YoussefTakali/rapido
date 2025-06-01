@@ -21,12 +21,8 @@
           <div class="n-active"></div>
         </div>
   
-        <div class="n-messages">
-          <i class="fas fa-envelope"></i>
-        </div>
-  
         <div class="n-infos" style="display: flex; align-items: center; gap: 0.5rem;">
-          <img class="n-profilepic" src="assets/Detachment.webp" alt="profile" />
+          <img class="n-profilepic" [src]="imageUrl" alt="profile" />
           <div class="n-dropdown-menu">
             <!-- Replace with real dropdown if needed -->
             <div class="n-dropdown-menu-item">
@@ -37,7 +33,7 @@
             </div>
             <div class="n-dropdown-menu-item">
 
-              <a class="n-link" (click)="logout()">Logout</a>            </div>
+              <a class="n-link" (click)="logout()">Logout</a></div>
 
        
           </div>
