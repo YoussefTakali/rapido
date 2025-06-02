@@ -1,4 +1,3 @@
-// src/auth/auth.controller.ts
 import {
   Controller,
   Post,
@@ -8,6 +7,8 @@ import {
   UseGuards,
   Get,
   Request,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
@@ -18,16 +19,32 @@ import { RefreshTokenDto, RefreshTokenResponseDto } from './dto/refresh-token.dt
 import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Public } from './decorators/public.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('register')
+ @Post('register')
   @Public()
   @HttpCode(HttpStatus.CREATED)
-  async register(@Body() registerDto: RegisterDto): Promise<RegisterResponseDto> {
-    return this.authService.register(registerDto);
+  @UseInterceptors(FileInterceptor('profilePicture', {
+    storage: diskStorage({
+      destination: './uploads/profile-pictures',
+      filename: (req, file, callback) => {
+        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+        const ext = extname(file.originalname);
+        callback(null, `user-${uniqueSuffix}${ext}`);
+      },
+    }),
+  }))
+  async register(
+    @Body() registerDto: RegisterDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ): Promise<RegisterResponseDto> {
+    return this.authService.register({ ...registerDto });
   }
 
   @Post('login')
@@ -46,11 +63,6 @@ export class AuthController {
     return this.authService.refreshToken(refreshTokenDto);
   }
 
-  @Get('profile')
-  @UseGuards(JwtAuthGuard)
-  async getProfile(@Request() req: any) {
-    return req.user;
-  }
 
   @Post('logout')
   @UseGuards(JwtAuthGuard)

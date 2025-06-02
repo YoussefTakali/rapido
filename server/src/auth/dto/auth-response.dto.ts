@@ -32,6 +32,10 @@ export class UserResponseDto {
     example: Role.EMPLOYEE
   })
   role: Role;
+  @IsOptional()
+  @IsString()
+  profilePicture?: string;
+
 }
 
 export class AuthResponseDto {

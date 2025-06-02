@@ -1,15 +1,14 @@
-// src/auth/strategies/jwt.strategy.ts
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtModuleOptions } from '@nestjs/jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 export interface JwtPayload {
   sub: number;
   email: string;
   role: string;
-  type: string; 
+  type: string;
   iat?: number;
   exp?: number;
 }
@@ -17,15 +16,15 @@ export interface JwtPayload {
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private readonly jwtOptions: JwtModuleOptions, // Injected from module
+    private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: jwtOptions.secret!,
-      issuer: jwtOptions.signOptions?.issuer,
-      audience: jwtOptions.signOptions?.audience,
+      secretOrKey: configService.get<string>('JWT_SECRET')!,
+      issuer: configService.get<string>('JWT_ISSUER'),
+      audience: configService.get<string>('JWT_AUDIENCE'),
     });
   }
 

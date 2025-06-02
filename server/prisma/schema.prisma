@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -13,18 +7,30 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-model User {
-  id            Int           @id @default(autoincrement())
-  name          String
-  email         String        @unique
-  password      String
-  phoneNumber   String
-  dateOfBirth   DateTime
-  role          Role
-  createdAt     DateTime      @default(now()) 
 
-  userProfiles  UserProfile[]
-  devises       Devis[]       @relation("UserDevis")
+model User {
+  id             Int              @id @default(autoincrement())
+  name           String
+  email          String           @unique
+  password       String
+  phoneNumber    String
+  dateOfBirth    DateTime
+  role           Role
+  createdAt      DateTime         @default(now()) 
+  profilePicture String?
+  userProfiles   UserProfile[]
+  devises        Devis[]          @relation("UserDevis")
+
+  calendarEvents CalendarEvent[]  // <-- added back-relation for calendar events
+}
+
+model Client {
+  id        Int     @id @default(autoincrement())
+  nom       String
+  prenom    String
+  email     String  @unique
+  telephone String
+  devis     Devis[]
 }
 
 model Profile {
@@ -64,15 +70,126 @@ model UserProfile {
 }
 
 model Devis {
-  id         Int      @id @default(autoincrement())
-  title      String
-  date       DateTime @default(now())
+  id                      Int       @id @default(autoincrement())
+  date                    DateTime  @default(now())
+  volume                  Float
+
+  adresseDepart           String
+  typeLogementDepart      TypeLogement
+  etageDepart             Int
+  ascenseurDepart         AscenseurType
+  distancePortageDepart   DistancePortageType
+  dateDepart              DateTime
+  monteMeubleDepart       Boolean
+
+  adresseLivraison        String
+  typeLogementLivraison   TypeLogement
+  etageLivraison          Int
+  ascenseurLivraison      AscenseurType
+  distancePortageLivraison DistancePortageType
+  dateLivraison           DateTime
+  monteMeubleLivraison    Boolean
+  prixDevis              Decimal @default(0.0)
+  options                 OptionType[] // Enum list
+  etat                    EtatDevis
 
   userId     Int
   user       User     @relation("UserDevis", fields: [userId], references: [id])
 
   profileId  Int
   profile    Profile  @relation("ProfileDevis", fields: [profileId], references: [id])
+
+  clientId   Int
+  client     Client   @relation(fields: [clientId], references: [id])
+}
+
+model CalendarEvent {
+  id             Int           @id @default(autoincrement())
+  userId         Int
+  user           User          @relation(fields: [userId], references: [id])
+
+  title          String
+  description    String?
+  location       String?
+
+  startDateTime  DateTime
+  endDateTime    DateTime
+
+  isAllDay       Boolean       @default(false)
+
+  recurrence     RecurrenceType? 
+
+  reminderMinutes Int?
+
+  status         EventStatus   @default(SCHEDULED)
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+enum RecurrenceType {
+  NONE
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+enum EventStatus {
+  SCHEDULED
+  CANCELLED
+  COMPLETED
+}
+
+enum EtatDevis {
+  BROUILLON
+  ARCHIVE
+  GAGNE
+  PERDU
+  ENVOYEE
+  EN_COURS
+}
+
+enum OptionType {
+  DEMONTAGE 
+  REMONTAGE
+  EMBALLAGE
+  DEBALLAGE
+  TRANSPORT
+  GARDE_MEUBLE
+  MANUTENTION
+}
+
+enum TypeLogement {
+  APPARTEMENT
+  MAISON
+  STUDIO
+  DUPLEX
+  BUREAU
+  GARDE_MEUBLE
+}
+
+enum AscenseurType {
+  SANS_ASCENSEUR
+  TYPE1
+  TYPE2
+  TYPE3
+  TYPE4
+  TYPE5
+}
+
+enum DistancePortageType {
+  TYPE1
+  TYPE2
+  TYPE3
+  TYPE4
+  TYPE5
+  TYPE6
+  TYPE7
+  TYPE8
+  TYPE9
+  TYPE10
+  TYPE11
 }
 
 enum Role {

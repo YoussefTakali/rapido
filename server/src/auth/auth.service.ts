@@ -39,7 +39,7 @@ export class AuthService {
 
       // Hash password with configurable salt rounds
       const hashedPassword = await this.hashPassword(dto.password);
-
+      console.log(`Hashed password for ${dto.email}: ${hashedPassword}`);
       // Create user
       const user = await this.prisma.user.create({
         data: {
@@ -99,6 +99,7 @@ export class AuthService {
       const tokens = await this.generateTokens(user);
       
       this.logger.log(`User logged in successfully: ${user.email}`);
+      this.logger.log(`User logged in successfully: ${user.profilePicture}`);
 
       return {
         access_token: tokens.accessToken,
@@ -108,6 +109,7 @@ export class AuthService {
           name: user.name,
           email: user.email,
           role: user.role,
+          profilePicture: user.profilePicture , // Optional field
         },
       };
     } catch (error) {
@@ -168,6 +170,7 @@ async refreshToken(refreshTokenDto: RefreshTokenDto) {
         email: true,
         password: true,
         role: true,
+        profilePicture: true, // Optional field
       },
     });
 
@@ -200,7 +203,7 @@ async refreshToken(refreshTokenDto: RefreshTokenDto) {
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
-        expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRATION', '15m'),
+        expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRATION', '9h'),
       }),
       this.jwtService.signAsync(refreshPayload, {
         expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRATION', '9h'),
@@ -214,7 +217,7 @@ async refreshToken(refreshTokenDto: RefreshTokenDto) {
     return this.jwtService.sign(
       { ...payload, type: 'access' },
       {
-        expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRATION', '15m'),
+        expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRATION', '9h'),
       }
     );
   }
