@@ -90,18 +90,41 @@ export interface User {
   id: number;
   name: string;
   email: string;
-  // other fields...
+  password: string;
+  phoneNumber: string;
+  dateOfBirth: string;
+  role: 'EMPLOYEE' | 'ADMIN';
+  createdAt: string;
+  profilePicture: string;
 }
 
 export interface Profile {
   id: number;
   name: string;
-  // other fields...
+  email: string;
+  phone: string;
+  companyName: string;
+  formeJuridique: string;
+  capitalSocial: string;
+  siret: string;
+  tva: string;
+  rcsOuRm: string;
+  adresse: string;
+  logo: string;
+  nomAssurance: string;
+  montantMobilier: string;
+  montantMaxParObjet: string;
+  franchise: string;
+  pourcentageAcompte: string;
+  bic: string;
+  iban: string;
+  pdfCgv: string;
 }
 
 export interface Client {
   id: number;
   nom: string;
   prenom: string;
-  // other fields...
+  email: string;
+  telephone: string;
 }

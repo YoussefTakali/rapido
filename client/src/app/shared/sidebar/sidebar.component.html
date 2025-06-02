@@ -1,7 +1,7 @@
 <div class="s-container" [class.visible]="isSidebarVisible">
     <ul>
 <li class="s-link" [routerLink]="'/dashboard'" routerLinkActive="active">
-  <i class="fas fa-project-diagram s-icon"></i>
+  <i class="fas fa-home s-icon"></i>
   <div class="s-link-text">Home</div>
 </li>
       <li class="s-link" [routerLink]="'/clients'" routerLinkActive="active">
@@ -9,12 +9,12 @@
         <div class="s-link-text">Clients</div>
       </li>
       <li class="s-link" [routerLink]="'/devis'" routerLinkActive="active">
-        <i class="fas fa-file-alt s-icon"></i>
+        <i class="fas fa-file-invoice"></i>
         <div class="s-link-text">Devis</div>
       </li>
-      <li class="s-link">
-        <i class="fas fa-user-plus s-icon"></i>
-        <div class="s-link-text">Recruitment</div>
+      <li class="s-link" [routerLink]="'/agenda'" routerLinkActive="active">
+<i class="fas fa-calendar-day s-icon"></i>
+        <div class="s-link-text">Agenda</div>
       </li>
       <li class="s-link">
         <i class="fas fa-building s-icon"></i>

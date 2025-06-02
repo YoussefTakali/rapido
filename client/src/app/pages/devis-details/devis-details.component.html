@@ -1,0 +1,177 @@
+<div *ngIf="devis" class="devis-details">
+<div class="header">
+    <h2>Détails du Devis #{{ devis.id }}</h2>
+    <button class="edit-btn" (click)="toggleEdit()">
+      ✏️ {{ isEditing ? 'Terminer' : 'Modifier' }}
+    </button>
+  </div>
+  <div class="details-grid">
+    <!-- Client (Read-only) -->
+    <div class="details-section">
+      <h3>Client</h3>
+      <p>Nom: {{ devis.client?.prenom }} {{ devis.client?.nom }}</p>
+      <p>Email: {{ devis.client?.email }}</p>
+      <p>Téléphone: {{ devis.client?.telephone }}</p>
+    </div>
+
+    <!-- Informations Générales -->
+<div class="details-section">
+  <h3>Informations Générales</h3>
+  
+  <p class="field-group">
+    <label>Volume:</label>
+    <span *ngIf="!isEditing">{{ devis.volume }} m³</span>
+    <input *ngIf="isEditing" type="number" [(ngModel)]="devis.volume" min="0" step="0.1" />
+  </p>
+
+  <p class="field-group">
+    <label>État:</label>
+    <span *ngIf="!isEditing">{{ devis.etat }}</span>
+    <select *ngIf="isEditing" [(ngModel)]="devis.etat">
+      <option *ngFor="let etat of etatDevisOptions" [value]="etat">{{ etat }}</option>
+    </select>
+  </p>
+
+  <p class="field-group">
+    <label>Prix estimé:</label>
+    <span *ngIf="!isEditing">{{ devis.prixDevis }} €</span>
+    <input *ngIf="isEditing" type="number" [(ngModel)]="devis.prixDevis" min="0" step="0.01" />
+  </p>
+
+  <p class="field-group">
+    <label>Options:</label>
+    <span *ngIf="!isEditing">{{ devis.options.join(', ') }}</span>
+    <input *ngIf="isEditing" type="text" [(ngModel)]="optionsString" placeholder="Séparez par des virgules" />
+  </p>
+</div>
+
+<!-- Départ -->
+<div class="details-section">
+  <h3>Départ</h3>
+  
+  <p class="field-group">
+    <label>Adresse:</label>
+    <span *ngIf="!isEditing">{{ devis.adresseDepart }}</span>
+    <input *ngIf="isEditing" type="text" [(ngModel)]="devis.adresseDepart" />
+  </p>
+
+  <p class="field-group">
+    <label>Type logement:</label>
+    <span *ngIf="!isEditing">{{ devis.typeLogementDepart }}</span>
+    <select *ngIf="isEditing" [(ngModel)]="devis.typeLogementDepart">
+      <option *ngFor="let type of typeLogementOptions" [value]="type">{{ type }}</option>
+    </select>
+  </p>
+
+  <p class="field-group">
+    <label>Étage:</label>
+    <span *ngIf="!isEditing">{{ devis.etageDepart }}</span>
+    <input *ngIf="isEditing" type="number" [(ngModel)]="devis.etageDepart" min="0" />
+  </p>
+
+  <p class="field-group">
+    <label>Ascenseur:</label>
+    <span *ngIf="!isEditing">{{ devis.ascenseurDepart }}</span>
+    <select *ngIf="isEditing" [(ngModel)]="devis.ascenseurDepart">
+      <option *ngFor="let ascenseur of ascenseurOptions" [value]="ascenseur">{{ ascenseur }}</option>
+    </select>
+  </p>
+
+  <p class="field-group">
+    <label>Distance portage:</label>
+    <span *ngIf="!isEditing">{{ devis.distancePortageDepart }}</span>
+    <select *ngIf="isEditing" [(ngModel)]="devis.distancePortageDepart">
+      <option *ngFor="let distance of distancePortageOptions" [value]="distance">{{ distance }}</option>
+    </select>
+  </p>
+
+  <p class="field-group">
+    <label>Monte-meuble:</label>
+    <span *ngIf="!isEditing">{{ devis.monteMeubleDepart ? 'Oui' : 'Non' }}</span>
+    <input *ngIf="isEditing" type="checkbox" [(ngModel)]="devis.monteMeubleDepart" />
+  </p>
+
+  <p class="field-group">
+    <label>Date de départ:</label>
+    <span *ngIf="!isEditing">{{ devis.dateDepart | date: 'fullDate' }} à {{ devis.dateDepart | date: 'shortTime' }}</span>
+    <input *ngIf="isEditing" type="datetime-local" [(ngModel)]="devisDateDepartString" />
+  </p>
+</div>
+
+<!-- Livraison -->
+<div class="details-section">
+  <h3>Livraison</h3>
+  
+  <p class="field-group">
+    <label>Adresse:</label>
+    <span *ngIf="!isEditing">{{ devis.adresseLivraison }}</span>
+    <input *ngIf="isEditing" type="text" [(ngModel)]="devis.adresseLivraison" />
+  </p>
+
+  <p class="field-group">
+    <label>Type logement:</label>
+    <span *ngIf="!isEditing">{{ devis.typeLogementLivraison }}</span>
+    <select *ngIf="isEditing" [(ngModel)]="devis.typeLogementLivraison">
+      <option *ngFor="let type of typeLogementOptions" [value]="type">{{ type }}</option>
+    </select>
+  </p>
+
+  <p class="field-group">
+    <label>Étage:</label>
+    <span *ngIf="!isEditing">{{ devis.etageLivraison }}</span>
+    <input *ngIf="isEditing" type="number" [(ngModel)]="devis.etageLivraison" min="0" />
+  </p>
+
+  <p class="field-group">
+    <label>Ascenseur:</label>
+    <span *ngIf="!isEditing">{{ devis.ascenseurLivraison }}</span>
+    <select *ngIf="isEditing" [(ngModel)]="devis.ascenseurLivraison">
+      <option *ngFor="let ascenseur of ascenseurOptions" [value]="ascenseur">{{ ascenseur }}</option>
+    </select>
+  </p>
+
+  <p class="field-group">
+    <label>Distance portage:</label>
+    <span *ngIf="!isEditing">{{ devis.distancePortageLivraison }}</span>
+    <select *ngIf="isEditing" [(ngModel)]="devis.distancePortageLivraison">
+      <option *ngFor="let distance of distancePortageOptions" [value]="distance">{{ distance }}</option>
+    </select>
+  </p>
+
+  <p class="field-group">
+    <label>Monte-meuble:</label>
+    <span *ngIf="!isEditing">{{ devis.monteMeubleLivraison ? 'Oui' : 'Non' }}</span>
+    <input *ngIf="isEditing" type="checkbox" [(ngModel)]="devis.monteMeubleLivraison" />
+  </p>
+
+  <p class="field-group">
+    <label>Date de livraison:</label>
+    <span *ngIf="!isEditing">{{ devis.dateLivraison | date: 'fullDate' }} à {{ devis.dateLivraison | date: 'shortTime' }}</span>
+    <input *ngIf="isEditing" type="datetime-local" [(ngModel)]="devisDateLivraisonString" />
+  </p>
+</div>
+
+
+    <!-- Employé (Read-only) -->
+    <div class="details-section">
+      <h3>Employé (Créateur)</h3>
+      <p>Nom: {{ devis.user?.name }}</p>
+      <p>Email: {{ devis.user?.email }}</p>
+      <p>Téléphone: {{ devis.user?.phoneNumber }}</p>
+    </div>
+
+    <!-- Profil (Read-only) -->
+    <div class="details-section">
+      <h3>Profil / Entreprise</h3>
+      <p>Nom: {{ devis.profile?.name }}</p>
+      <div *ngIf="devis.profile?.logo">
+        <img [src]="devis.profile?.logo" alt="Logo entreprise" style="max-width: 100px; max-height: 100px;" />
+      </div>
+    </div>
+  </div>
+
+  <button (click)="goBack()" class="back-button">Retour</button>
+</div>
+
+<div *ngIf="loading">Chargement...</div>
+<div *ngIf="error" class="error">{{ error }}</div>

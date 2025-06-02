@@ -14,6 +14,9 @@ import { DevisComponent } from './pages/devis/devis.component';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { AddDevisComponent } from './pages/add-devis/add-devis.component';
 import { ClientsComponent } from './pages/clients/clients.component';
+import { DevisDetailsComponent } from './pages/devis-details/devis-details.component';
+import { AgendaComponent } from './pages/agenda/agenda.component';
+
 
 @NgModule({
   declarations: [
@@ -24,12 +27,12 @@ import { ClientsComponent } from './pages/clients/clients.component';
     LoginComponent,
     DevisComponent,
     AddDevisComponent,
-    ClientsComponent
+    ClientsComponent,
+    DevisDetailsComponent,
+    AgendaComponent,
   ],
   imports: [
     ReactiveFormsModule,
-    BrowserModule,
-    AppRoutingModule,
     NgxSliderModule,
     BrowserModule,
     FormsModule,

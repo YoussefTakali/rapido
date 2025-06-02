@@ -15,7 +15,9 @@ input[type="text"] {
 
 /* Table styles */
 table {
-  width: 100%;
+    position: relative;
+    left: 1%;
+  width: 98%;
   border-collapse: collapse;
   font-family: "Segoe UI", sans-serif;
   background: #fff;
@@ -173,7 +175,11 @@ button:hover i {
   background-color: #d1fae5; /* green-100 */
   color: #065f46; /* green-800 */
 }
-
+.addbutton{
+    background-color: #667eea;
+    padding: 12px 16px;
+    color: white;
+}
 .status-perdu {
   background-color: #fee2e2; /* red-100 */
   color: #991b1b; /* red-800 */
@@ -194,12 +200,17 @@ button:hover i {
   align-items: center;
   margin: 20px 0;
 }
-
-.left-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.title {
+  padding: 40px 20px 10px 20px; /* top right bottom left */
+  font-size: 50px;
 }
+    .left-controls {
+        position: relative;
+        left: 40%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    }
 
 .right-controls {
     width: 800px;
@@ -225,7 +236,7 @@ button:hover i {
 }
 
 .search-bar input:focus {
-  border-bottom-color: #dc2626; /* red-600 */
+  border-bottom-color: #667eea; /* red-600 */
 }
 
 .search-bar input::placeholder {
@@ -243,7 +254,7 @@ button:hover i {
 }
 
 .search-bar input:focus + i.fa-search {
-  color: #dc2626;
+  color:  #667eea;
 }
 
 .filter-btn {
@@ -256,7 +267,7 @@ button:hover i {
 }
 
 .filter-btn:hover {
-  color: #1f2937; /* darker gray */
+  color: #667eea; /* darker gray */
 }
 .right-controls {
   display: flex;

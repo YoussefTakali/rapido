@@ -6,6 +6,8 @@ import { AuthGuard } from './auth.guard';
 import { DevisComponent } from './pages/devis/devis.component';
 import { AddDevisComponent } from './pages/add-devis/add-devis.component';
 import { ClientsComponent } from './pages/clients/clients.component';
+import { DevisDetailsComponent } from './pages/devis-details/devis-details.component';
+import { AgendaComponent } from './pages/agenda/agenda.component';
 
 const routes: Routes = [
   { path: '', component:MainLayoutComponent,canActivate: [AuthGuard] ,
@@ -13,6 +15,9 @@ const routes: Routes = [
       { path: 'devis', component: DevisComponent },
       { path: 'add-devis', component: AddDevisComponent },
       { path: 'clients', component: ClientsComponent },
+      { path: 'devis-details/:id', component: DevisDetailsComponent },
+      { path: 'agenda', component: AgendaComponent },
+
 
     ]
   },

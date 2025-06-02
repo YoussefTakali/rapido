@@ -159,10 +159,27 @@ onProfileCheckboxChange(event: any, profileId: number) {
     // your edit logic here
   }
 
-  deleteDevis(devis: any) {
-    console.log('Delete Devis:', devis);
-    // your delete logic here
+ confirmDelete(devis: any) {
+  const confirmed = window.confirm(`Are you sure you want to delete the devis for client ${devis.client.prenom} ${devis.client.nom}?`);
+  if (confirmed) {
+    this.deleteDevis(devis);
   }
+}
+
+// Your existing delete service call, e.g.:
+
+deleteDevis(devis: any) {
+  this.devisService.deleteDevis(devis.id).subscribe({
+    next: () => {
+      // remove from list or refresh
+      this.ngOnInit();
+    },
+    error: (err) => {
+      console.error('Failed to delete devis:', err);
+      alert('Error deleting devis');
+    }
+  });
+}
 
   totalPages(): number {
     return Math.ceil(this.filteredDevisList.length / this.itemsPerPage);
@@ -174,10 +191,9 @@ onProfileCheckboxChange(event: any, profileId: number) {
     }
   }
 
-  viewDevis(devis: any) {
-    console.log('View Devis:', devis);
-    // your view logic here
-  }
+viewDevis(devis: any) {
+  this.router.navigate(['/devis-details', devis.id]);
+}
 
   toggleFilter() {
     this.showFilter = !this.showFilter;
@@ -258,10 +274,26 @@ applyFilters() {
 
   // --- Gestion modification état ---
 
-  startEditingEtat(devisId: number, event: Event) {
-    event.stopPropagation();
+startEditingEtat(devisId: number, event: MouseEvent) {
+  event.stopPropagation();
+  if (this.editingEtatDevisId !== devisId) {
     this.editingEtatDevisId = devisId;
+
+    setTimeout(() => {
+      const selectElement = document.getElementById(`etat-select-${devisId}`) as HTMLSelectElement;
+      if (selectElement) {
+        selectElement.focus();
+        // Try to simulate click to open the dropdown (browser-dependent)
+        const event = new MouseEvent('mousedown', {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+        });
+        selectElement.dispatchEvent(event);
+      }
+    }, 0);
   }
+}
 
   cancelEditing() {
     this.editingEtatDevisId = null;

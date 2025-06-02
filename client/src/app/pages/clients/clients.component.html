@@ -1,19 +1,38 @@
+<h3 class="title">Mes Clients</h3>
+
 <div class="container">
-      <div class="header-row">
-    <h2>Mes Clients</h2>
+
+  <div class="controls-container">
+    <div class="left-controls">
+      <label for="itemsPerPage">Items per page:</label>
+      <select id="itemsPerPage" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+        <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
+      </select>
+    </div>
+
+    <div class="right-controls">
       <div class="search-bar">
-    <input 
-      type="text" 
-      placeholder="Rechercher..." 
-      [(ngModel)]="searchTerm" 
-      (input)="onSearchChange()" 
-      aria-label="Recherche"
-    />
+        <input
+          type="text"
+          placeholder="Rechercher par nom ou email"
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()" />
+        <i class="fa fa-search"></i>
+      </div>
+      <button class="filter-btn" title="Filters" (click)="toggleFilter()">
+        <i class="fas fa-filter"></i>
+      </button>
+    </div>
   </div>
-        </div>
-  <h2>Mes Clients</h2>
+
   <div class="cards">
-    <div class="card" *ngFor="let client of clients" (click)="goToClientDevises(client.id)" tabindex="0" role="button">
+    <div
+      class="card"
+      *ngFor="let client of paginatedClients"
+      (click)="goToClientDevises(client.id)"
+      tabindex="0"
+      role="button"
+    >
       <div class="card-header">
         {{ client.prenom }} {{ client.nom }}
       </div>
@@ -23,5 +42,20 @@
         <p><strong>Nombre de devis:</strong> {{ client.devisCount || 0 }}</p>
       </div>
     </div>
+  </div>
+
+  <!-- Pagination controls -->
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button (click)="prevPage()" [disabled]="currentPage === 1">Prev</button>
+
+    <button
+      *ngFor="let page of [].constructor(totalPages); let i = index"
+      [class.active]="currentPage === i + 1"
+      (click)="goToPage(i + 1)"
+    >
+      {{ i + 1 }}
+    </button>
+
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
   </div>
 </div>

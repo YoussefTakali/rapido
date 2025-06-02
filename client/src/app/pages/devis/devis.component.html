@@ -1,4 +1,5 @@
 
+<h3 class="title">Devis List</h3>
 <div class="controls-container">
   <div class="left-controls">
     <label for="itemsPerPage">Items per page:</label>
@@ -6,7 +7,7 @@
       <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
     </select>
   </div>
-<button (click)="goToAddDevis()">Add Devis</button>
+
 
   <div class="right-controls">
     <div class="search-bar">
@@ -20,6 +21,8 @@
     <button class="filter-btn" title="Filters" (click)="toggleFilter()">
       <i class="fas fa-filter"></i>
     </button>
+    <button class="addbutton" (click)="goToAddDevis()">Add Devis</button>
+    
   </div>
 </div>
 
@@ -49,17 +52,17 @@
       <td>{{ devis.prixDevis }} €</td>
         <td (click)="startEditingEtat(devis.id, $event)">
         <ng-container *ngIf="editingEtatDevisId === devis.id; else showEtat">
-            <select
-            [ngModel]="devis.etat"
-            (ngModelChange)="onEtatChange(devis, $event)"
-            (click)="$event.stopPropagation()"
-            (blur)="cancelEditing()"
-            autofocus
-            >
-            <option *ngFor="let etat of etatValues" [value]="etat">
-                {{ mapStatusToLabel(etat) }}
-            </option>
-            </select>
+ <select
+  #etatSelect
+  [ngModel]="devis.etat"
+  (ngModelChange)="onEtatChange(devis, $event)"
+  (click)="$event.stopPropagation()"
+  (blur)="cancelEditing()"
+>
+  <option *ngFor="let etat of etatValues" [value]="etat">
+    {{ mapStatusToLabel(etat) }}
+  </option>
+</select>
         </ng-container>
         <ng-template #showEtat>
             <span
@@ -80,14 +83,12 @@
 
       <td>{{ devis.client.telephone }}</td>
       <td>
-        <button (click)="editDevis(devis); $event.stopPropagation()" title="Edit">
-          <i class="fas fa-pen"></i>
+        <button (click)="confirmDelete(devis); $event.stopPropagation()" title="Delete">
+        <i class="fas fa-trash"></i>
         </button>
-        <button (click)="deleteDevis(devis); $event.stopPropagation()" title="Delete">
-          <i class="fas fa-trash"></i>
-        </button>
+
         <button (click)="viewDevis(devis); $event.stopPropagation()" title="View">
-          <i class="fas fa-eye"></i>
+        <i class="fas fa-eye"></i>
         </button>
       </td>
     </tr>

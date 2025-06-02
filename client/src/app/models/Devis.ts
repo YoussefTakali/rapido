@@ -17,10 +17,15 @@ export interface DevisFormData {
   ascenseurLivraison: AscenseurType;
   distancePortageLivraison: DistancePortageType;
   dateLivraison: string;
+  prixDevis?: number; // optional, can be calculated later
   monteMeubleLivraison: boolean;
   options: OptionType[];
   etat: EtatDevis;
 }
+export type DevisFormUpdate = Omit<
+  DevisFormData,
+  'userId' | 'profileId' | 'clientId' 
+>;
 export enum EtatDevis {
   BROUILLON = 'BROUILLON',
   ARCHIVE = 'ARCHIVE',
