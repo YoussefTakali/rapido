@@ -13,8 +13,8 @@ export class ClientService {
 
   constructor(private http: HttpClient) { }
 
-  getClients(): Observable<Client[]> {
-    return this.http.get<Client[]>(this.apiUrl);
+  getClients(): Observable<ClientResponse[]> {
+    return this.http.get<ClientResponse[]>(this.apiUrl);
   }
 
   createClient(client: Client): Observable<Client> {

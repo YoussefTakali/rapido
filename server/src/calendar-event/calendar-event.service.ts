@@ -10,9 +10,61 @@ import { EventStatus } from 'generated/prisma';
 export class CalendarEventService {
   constructor(private prisma: PrismaService) {}
 
-  create(data: CreateCalendarEventDto) {
-    return this.prisma.calendarEvent.create({ data });
+async create(data: CreateCalendarEventDto) {
+  const startDate = new Date(data.startDateTime);
+  const endDate = new Date(data.endDateTime);
+
+  // Validate end date is after start date
+  if (endDate <= startDate) {
+    console.log('Invalid event: End time is before or equal to start time.');
+    return {
+      status: 400,
+      message: 'Invalid: End time must be after start time.',
+    };
   }
+
+  // Convert to ISO strings
+  const dataWithISO = {
+    ...data,
+    startDateTime: startDate.toISOString(),
+    endDateTime: endDate.toISOString(),
+  };
+
+  // Check for overlapping events
+  const overlappingEvent = await this.prisma.calendarEvent.findFirst({
+    where: {
+      OR: [
+        {
+          startDateTime: {
+            lte: dataWithISO.endDateTime,
+          },
+          endDateTime: {
+            gte: dataWithISO.startDateTime,
+          },
+        },
+      ],
+    },
+  });
+
+  if (overlappingEvent) {
+    console.log('Conflict: Overlapping event detected:', overlappingEvent);
+    return {
+      status: 409,
+      message: 'Conflict: An event overlaps with this time slot.',
+    };
+  }
+
+  // No conflict, create the event
+  const createdEvent = await this.prisma.calendarEvent.create({ data: dataWithISO });
+
+  return {
+    status: 201,
+    message: 'Event created successfully.',
+    data: createdEvent,
+  };
+}
+
+
 
   findAllByUser(userId: number, startDate?: string, endDate?: string) {
     return this.prisma.calendarEvent.findMany({

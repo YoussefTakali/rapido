@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Devis, EtatDevis, OptionType, TypeLogement, AscenseurType, DistancePortageType, Profile } from 'src/app/models/DevisResponse';
 import { DevisService } from 'src/app/services/devis.service';
 import { Location } from '@angular/common';
-import { DevisFormData, DevisFormUpdate } from 'src/app/models/Devis';
+import { DevisFormData, DevisFormUpdate } from 'src/app/models/DevisUpdate';
 
 @Component({
   selector: 'app-devis-details',

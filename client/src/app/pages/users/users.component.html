@@ -1,0 +1,114 @@
+<div class="users-page">
+  <div class="users-header">
+    <div class="header-content">
+      <h1 class="page-title">Team Members</h1>
+      <p class="page-subtitle">Manage and view all team members</p>
+    </div>
+    
+    <div class="header-actions">
+      <div class="search-wrapper">
+        <input
+          type="text"
+          placeholder="Search users..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()"
+          class="search-input"
+        />
+        <div class="search-icon"></div>
+      </div>
+      
+      <select [(ngModel)]="selectedFilter" (change)="onFilterChange()" class="filter-select">
+        <option value="all">All Users</option>
+        <option value="online">Online</option>
+        <option value="offline">Offline</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-grid">
+      <div *ngFor="let item of [1,2,3,4,5,6]" class="skeleton-card">
+        <div class="skeleton-avatar"></div>
+        <div class="skeleton-content">
+          <div class="skeleton-line skeleton-name"></div>
+          <div class="skeleton-line skeleton-email"></div>
+          <div class="skeleton-line skeleton-phone"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && filteredUsers.length === 0" class="empty-state">
+    <div class="empty-icon"></div>
+    <h3 class="empty-title">No users found</h3>
+    <p class="empty-description">
+      {{ searchTerm ? 'Try adjusting your search terms' : 'No users match the selected filter' }}
+    </p>
+  </div>
+
+  <div *ngIf="!isLoading && filteredUsers.length > 0" class="users-container">
+    <div *ngFor="let user of filteredUsers" class="user-card" (click)="onUserClick(user)">
+      <div class="user-avatar-container">
+        <img 
+          [src]="'http://localhost:3000/uploads/profile-pictures/' + user.profilePicture" 
+          [alt]="user.name"
+          class="user-image"
+          (error)="onImageError($event)"
+          (load)="onImageLoad($event)"
+          *ngIf="user.profilePicture"
+        />
+        <div class="user-avatar-fallback">
+          {{ getInitials(user.name) }}
+        </div>
+      </div>
+      
+      <div class="user-info">
+        <div class="user-header">
+          <h3 class="user-name">{{ user.name }}</h3>
+            <span class="status-dot" [class.online]="user.isOnline" [class.offline]="!user.isOnline"></span>
+          <span class="role-badge" [class]="getRoleBadgeClass(user.role)">
+            {{ user.role }}
+          </span>
+        </div>
+        
+        <div class="user-details">
+          <div class="detail-item">
+            <div class="detail-icon email-icon"></div>
+            <span class="detail-text">{{ user.email }}</span>
+          </div>
+          
+          <div *ngIf="user.phoneNumber" class="detail-item">
+            <div class="detail-icon phone-icon"></div>
+            <span class="detail-text">{{ user.phoneNumber }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-icon clock-icon"></div>
+            <span class="detail-text">
+                {{ user.isOnline ? 'Online' : getLastSeenText(user.lastSeen) }}
+              </span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="user-actions">
+        
+        <button 
+          class="action-btn edit-btn" 
+          (click)="onEditUser(user, $event)"
+          title="Edit user"
+        >
+          <div class="edit-icon"></div>
+        </button>
+        
+        <button 
+          class="action-btn delete-btn" 
+          (click)="onDeleteUser(user, $event)"
+          title="Delete user"
+        >
+          <div class="delete-icon"></div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

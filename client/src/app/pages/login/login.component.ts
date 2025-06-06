@@ -3,17 +3,23 @@ import { AuthService } from '../../services/auth.service'; // adjust path as nee
 import { Router } from '@angular/router';
 
 @Component({
+
   selector: 'app-login',
   templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
   email = '';
   password = '';
   errorMessage = '';
+  showPassword = false; // for toggling password visibility
+    isLoading = false
 
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
+    this.isLoading = true
+
     this.errorMessage = '';
 
     this.authService.login(this.email, this.password).subscribe({
@@ -30,5 +36,18 @@ export class LoginComponent {
         this.errorMessage = err.error?.message || 'Login failed';
       },
     });
+    this.isLoading = false
   }
+    togglePasswordVisibility() {
+    this.showPassword = !this.showPassword
+  }
+
+  onForgotPassword() {
+    console.log("Forgot password clicked")
+  }
+
+  onSignUp() {
+    this.router.navigate(['/register']); // Navigate to the registration page
+  }
+
 }

@@ -45,6 +45,11 @@ export class CalendarEventService {
     return this.http.get<ApiCalendarEvent[]>(`${this.apiUrl}/user/${userId}`);
   }
     createEvent(event: MyCalendarEvent): Observable<MyCalendarEvent> {
+      console.log('Creating calendar event:', event);
     return this.http.post<MyCalendarEvent>(this.apiUrl, event);
+  }
+    findEventById(eventId: number): Observable<ApiCalendarEvent> {
+    console.log(`Fetching calendar event for ID: ${eventId}`);
+    return this.http.get<ApiCalendarEvent>(`${this.apiUrl}/${eventId}`);
   }
 }

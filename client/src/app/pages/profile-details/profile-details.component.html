@@ -1,0 +1,139 @@
+<div *ngIf="profile" class="profile-details">
+  <div class="profile-header">
+    <h2>Détails du Profil #{{ profile.id }}</h2>
+    <button class="edit-btn" (click)="toggleEdit()">
+      ✏️ {{ isEditing ? 'Terminer' : 'Modifier' }}
+    </button>
+  </div>
+
+  <div class="details-grid">
+    <!-- Informations Entreprise -->
+    <div class="details-section">
+      <h3>Informations Entreprise</h3>
+      
+      <p class="field-group">
+        <label>Nom de l'entreprise:</label>
+        <span *ngIf="!isEditing">{{ profile.companyName }}</span>
+        <input *ngIf="isEditing" type="text" [(ngModel)]="profile.companyName" />
+      </p>
+
+      <p class="field-group">
+        <label>Forme juridique:</label>
+        <span *ngIf="!isEditing">{{ profile.formeJuridique }}</span>
+        <input *ngIf="isEditing" type="text" [(ngModel)]="profile.formeJuridique" />
+      </p>
+
+      <p class="field-group">
+        <label>Capital social:</label>
+        <span *ngIf="!isEditing">{{ profile.capitalSocial | currency:'EUR':'symbol' }}</span>
+        <input *ngIf="isEditing" type="number" [(ngModel)]="profile.capitalSocial" min="0" step="0.01" />
+      </p>
+
+      <p class="field-group">
+        <label>SIRET:</label>
+        <span *ngIf="!isEditing">{{ profile.siret }}</span>
+        <input *ngIf="isEditing" type="text" [(ngModel)]="profile.siret" />
+      </p>
+
+      <p class="field-group">
+        <label>TVA:</label>
+        <span *ngIf="!isEditing">{{ profile.tva }}</span>
+        <input *ngIf="isEditing" type="text" [(ngModel)]="profile.tva" />
+      </p>
+
+      <p class="field-group">
+        <label>RCS/RM:</label>
+        <span *ngIf="!isEditing">{{ profile.rcsOuRm }}</span>
+        <input *ngIf="isEditing" type="text" [(ngModel)]="profile.rcsOuRm" />
+      </p>
+
+      <p class="field-group">
+        <label>Adresse:</label>
+        <span *ngIf="!isEditing">{{ profile.adresse }}</span>
+        <input *ngIf="isEditing" type="text" [(ngModel)]="profile.adresse" />
+      </p>
+
+      <p class="field-group">
+        <label>Logo:</label>
+        <span *ngIf="!isEditing">
+          <img *ngIf="profile.logo" [src]="'http://localhost:3000/uploads/profilesPDF/'+profile.logo" alt="Logo" style="max-width: 100px;" />
+          <span *ngIf="!profile.logo">Aucun logo</span>
+        </span>
+        <input *ngIf="isEditing" type="file" (change)="onLogoChange($event)" accept="image/*" />
+      </p>
+    </div>
+
+    <!-- Informations Assurance -->
+    <div class="details-section">
+      <h3>Informations Assurance</h3>
+      
+      <p class="field-group">
+        <label>Nom assurance:</label>
+        <span *ngIf="!isEditing">{{ profile.nomAssurance }}</span>
+        <input *ngIf="isEditing" type="text" [(ngModel)]="profile.nomAssurance" />
+      </p>
+
+      <p class="field-group">
+        <label>Montant mobilier:</label>
+        <span *ngIf="!isEditing">{{ profile.montantMobilier | currency:'EUR':'symbol' }}</span>
+        <input *ngIf="isEditing" type="number" [(ngModel)]="profile.montantMobilier" min="0" step="0.01" />
+      </p>
+
+      <p class="field-group">
+        <label>Montant max par objet:</label>
+        <span *ngIf="!isEditing">{{ profile.montantMaxParObjet | currency:'EUR':'symbol' }}</span>
+        <input *ngIf="isEditing" type="number" [(ngModel)]="profile.montantMaxParObjet" min="0" step="0.01" />
+      </p>
+
+      <p class="field-group">
+        <label>Franchise:</label>
+        <span *ngIf="!isEditing">{{ profile.franchise | currency:'EUR':'symbol' }}</span>
+        <input *ngIf="isEditing" type="number" [(ngModel)]="profile.franchise" min="0" step="0.01" />
+      </p>
+
+      <p class="field-group">
+        <label>Pourcentage acompte:</label>
+        <span *ngIf="!isEditing">{{ profile.pourcentageAcompte }}%</span>
+        <input *ngIf="isEditing" type="number" [(ngModel)]="profile.pourcentageAcompte" min="0" max="100" step="1" />
+      </p>
+    </div>
+
+    <!-- Informations Bancaires -->
+    <div class="details-section">
+      <h3>Informations Bancaires</h3>
+      
+      <p class="field-group">
+        <label>BIC:</label>
+        <span *ngIf="!isEditing">{{ profile.bic }}</span>
+        <input *ngIf="isEditing" type="text" [(ngModel)]="profile.bic" />
+      </p>
+
+      <p class="field-group">
+        <label>IBAN:</label>
+        <span *ngIf="!isEditing">{{ profile.iban }}</span>
+        <input *ngIf="isEditing" type="text" [(ngModel)]="profile.iban" />
+      </p>
+
+      <p class="field-group">
+        <label>CGV (PDF):</label>
+        <span *ngIf="!isEditing">
+          <a *ngIf="profile.pdfCgv" [href]="'http://localhost:3000/uploads/profilesPDF/'+profile.pdfCgv" target="_blank">Voir CGV</a>
+          <span *ngIf="!profile.pdfCgv">Aucun fichier CGV</span>
+        </span>
+        <input *ngIf="isEditing" type="file" (change)="onPdfCgvChange($event)" accept=".pdf" />
+      </p>
+    </div>
+  </div>
+
+  <div *ngIf="isEditing" class="edit-actions">
+    <button (click)="cancelEdit()" class="cancel-btn">Annuler</button>
+    <button (click)="saveChanges()" class="save-btn" [disabled]="saving">
+      {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+    </button>
+  </div>
+
+  <button (click)="goBack()" class="back-button">Retour</button>
+</div>
+
+<div *ngIf="loading">Chargement...</div>
+<div *ngIf="error" class="error">{{ error }}</div>

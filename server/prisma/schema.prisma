@@ -13,15 +13,16 @@ model User {
   name           String
   email          String           @unique
   password       String
-  phoneNumber    String
-  dateOfBirth    DateTime
+  phoneNumber    String?
+  dateOfBirth    DateTime?
   role           Role
   createdAt      DateTime         @default(now()) 
-  profilePicture String?
+  profilePicture String?          @default("defaultpp.jpg")
+  isOnline       Boolean          @default(false)
+  lastSeen       DateTime?        // Optional in case user was never online
   userProfiles   UserProfile[]
   devises        Devis[]          @relation("UserDevis")
-
-  calendarEvents CalendarEvent[]  // <-- added back-relation for calendar events
+  calendarEvents CalendarEvent[]
 }
 
 model Client {
@@ -35,9 +36,6 @@ model Client {
 
 model Profile {
   id                    Int           @id @default(autoincrement())
-  name                  String
-  email                 String
-  phone                 String
   companyName           String
   formeJuridique        String
   capitalSocial         Decimal
@@ -45,7 +43,7 @@ model Profile {
   tva                   String
   rcsOuRm               String
   adresse               String
-  logo                  String?       // Optional - path/URL to logo image
+  logo                  String?      @default("defaultpp.jpg")
   nomAssurance          String
   montantMobilier       Decimal
   montantMaxParObjet    Decimal
@@ -54,7 +52,6 @@ model Profile {
   bic                   String
   iban                  String
   pdfCgv                String?       // Optional - path/URL to PDF file
-
   userProfiles  UserProfile[]
   devises       Devis[]       @relation("ProfileDevis")
 }

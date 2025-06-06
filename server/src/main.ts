@@ -6,11 +6,15 @@ import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,  // strips properties that do not have decorators
-    forbidNonWhitelisted: true, // throws error if unknown properties are sent
-    transform: true,   // auto-transform payloads to DTO instances
-  }));
+app.useGlobalPipes(
+  new ValidationPipe({
+    whitelist: true,
+    transform: true,
+    transformOptions: {
+      enableImplicitConversion: true,
+    },
+  }),
+);
     app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
     app.enableCors({

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { DevisFormData, DevisFormUpdate, EtatDevis } from '../models/Devis';
+import { DevisFormData, DevisFormUpdate, EtatDevis } from '../models/DevisUpdate';
 import { Devis } from '../models/DevisResponse';
 
 @Injectable({

@@ -29,7 +29,7 @@
 <table>
   <thead>
     <tr>
-      <th></th>
+      <th>Date de Creation</th>
       <th>Client</th>
       <th>Profil</th> <!-- Nouvelle colonne Profil -->
       <th>Chargement</th>
@@ -42,11 +42,12 @@
   </thead>
   <tbody>
     <tr *ngFor="let devis of pagedDevisList()" (click)="selectDevis(devis)">
-      <td>
+      <!-- <td>
         <input type="checkbox" [(ngModel)]="devis.selected" (click)="$event.stopPropagation()" />
-      </td>
+      </td> -->
+      <td>{{ formatDate(devis.date) }}</td>
       <td><strong>{{ devis.client.prenom }} {{ devis.client.nom }}</strong></td>
-      <td>{{ devis.profile?.name || '—' }}</td> <!-- Affichage du nom du profil -->
+      <td>{{ devis.profile?.companyName || '—' }}</td> <!-- Affichage du nom du profil -->
       <td>{{ formatDate(devis.dateDepart) }} at {{ devis.adresseDepart }}</td>
       <td>{{ formatDate(devis.dateLivraison) }} at {{ devis.adresseLivraison }}</td>
       <td>{{ devis.prixDevis }} €</td>

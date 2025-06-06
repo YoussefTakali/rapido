@@ -1,0 +1,85 @@
+<div class="profile-dashboard">
+  <div class="header">
+    <div class="header-top">
+      <h1>Profile Dashboard</h1>
+      <button class="add-profile-btn" (click)="addProfile()">
+        Add Profile
+      </button>
+    </div>
+    <div class="summary-stats">
+      <div class="stat-card">
+        <h3>{{ profileSummaries.length }}</h3>
+        <p>Total Profiles</p>
+      </div>
+      <div class="stat-card">
+        <h3>{{ getTotalUsers() }}</h3>
+        <p>Total Users</p>
+      </div>
+      <div class="stat-card">
+        <h3>{{ getTotalDevises() }}</h3>
+        <p>Total Quotes</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading profiles...</p>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+    <button (click)="loadProfiles()" class="retry-btn">Retry</button>
+  </div>
+
+  <div *ngIf="!loading && !error" class="profiles-grid">
+    <div *ngFor="let profile of profileSummaries" class="profile-card"   (click)="goToProfile(profile.id)"
+  style="cursor: pointer;">
+      <div class="profile-header">
+        <div class="profile-title">
+          <span class="profile-id">ID: {{ profile.id }}</span>
+        </div>
+        <div class="profile-actions">
+            <button class="delete-btn" (click)="deleteProfile(profile.id)" title="Delete Profile">
+            <i class="fas fa-trash-alt"></i> <!-- Trash icon -->
+            </button>
+            <img 
+            *ngIf="profile.logo"
+            [src]="'http://localhost:3000/uploads/profilesPDF/' + profile.logo" 
+            alt="{{ profile.companyName }} Logo"
+            class="profile-logo"
+            />
+        </div>
+      </div>
+      
+      <div class="profile-info">
+        <div class="info-row">
+          <strong>Company:</strong> {{ profile.companyName }}
+        </div>
+        <div class="info-row">
+          <strong>Adresse:</strong> {{ profile.adresse }}
+        </div>
+        <div class="info-row">
+          <strong>Assurance:</strong> {{ profile.nomAssurance }}
+        </div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="stat-item">
+          <div class="stat-number">{{ profile.userCount }}</div>
+          <div class="stat-label">Users</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">{{ profile.deviseCount }}</div>
+          <div class="stat-label">Quotes</div>
+        </div>
+      </div>
+
+
+
+      <div *ngIf="profile.deviseCount === 0" class="no-quotes">
+        <p>No quotes available</p>
+      </div>
+    </div>
+  </div>
+</div>

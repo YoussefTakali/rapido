@@ -1,30 +1,91 @@
-<form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-  <div>
-    <label for="email">Email:</label>
-    <input
-      type="email"
-      id="email"
-      name="email"
-      [(ngModel)]="email"
-      required
-      email
-    />
+<div class="login-container">
+  <div class="login-wrapper">
+    <div class="login-header">
+      <div class="logo">
+        <div class="logo-icon"></div>
+      </div>
+      <h2 class="form-title">Welcome Back</h2>
+      <p class="form-subtitle">Please sign in to your account</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
+      <div class="form-group">
+        <label for="email" class="form-label">Email Address</label>
+        <div class="input-wrapper">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="email"
+            required
+            email
+            placeholder="you@example.com"
+            class="form-input"
+            [class.error]="errorMessage"
+          />
+          <div class="input-icon email-icon"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <div class="input-wrapper">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            name="password"
+            [(ngModel)]="password"
+            required
+            placeholder="Enter your password"
+            class="form-input"
+            [class.error]="errorMessage"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+          >
+            <div class="eye-icon" [class.eye-closed]="!showPassword"></div>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-options">
+        <label class="checkbox-wrapper">
+          <input type="checkbox" class="checkbox">
+          <span class="checkmark"></span>
+          <span class="checkbox-label">Remember me</span>
+        </label>
+        <button type="button" class="forgot-password" (click)="onForgotPassword()">
+          Forgot password?
+        </button>
+      </div>
+
+      <button 
+        type="submit" 
+        [disabled]="loginForm.invalid || isLoading" 
+        class="btn-submit"
+        [class.loading]="isLoading"
+      >
+        <span *ngIf="!isLoading">Sign In</span>
+        <span *ngIf="isLoading" class="loading-spinner"></span>
+        <span *ngIf="isLoading">Signing in...</span>
+      </button>
+
+      <div *ngIf="errorMessage" class="error-message">
+        <div class="error-icon"></div>
+        {{ errorMessage }}
+      </div>
+    </form>
+
+    <div class="login-footer">
+      <p class="signup-text">
+        Don't have an account? 
+        <button type="button" class="signup-link" (click)="onSignUp()">
+          Sign up here
+        </button>
+      </p>
+    </div>
   </div>
-
-  <div>
-    <label for="password">Password:</label>
-    <input
-      type="password"
-      id="password"
-      name="password"
-      [(ngModel)]="password"
-      required
-    />
-  </div>
-
-  <button type="submit" [disabled]="loginForm.invalid">Login</button>
-</form>
-
-<div *ngIf="errorMessage" style="color: red; margin-top: 10px;">
-  {{ errorMessage }}
 </div>

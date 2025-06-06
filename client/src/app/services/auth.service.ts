@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { intersectRanges } from '@fullcalendar/core/internal';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 interface User {
@@ -9,7 +10,11 @@ interface User {
   role: string;
   profilePicture: string | null;
 }
-
+export interface RegisterDto{
+  name: string;
+  email: string;
+  password: string;
+}
 interface LoginResponse {
   access_token: string;
   refresh_token?: string;
@@ -20,7 +25,9 @@ export class AuthService {
   private accessToken: string | null = null;
   constructor(private http: HttpClient) {}
 
-
+  register(data: RegisterDto): Observable<any> {
+    return this.http.post(`${environment.apiBaseUrl}/auth/register`, data);
+  }
 login(email: string, password: string): Observable<LoginResponse> {
   return new Observable<LoginResponse>((observer) => {
     this.http.post<LoginResponse>(`${environment.apiBaseUrl}/auth/login`, { email, password }).subscribe({

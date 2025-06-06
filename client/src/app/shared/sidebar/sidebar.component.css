@@ -61,7 +61,7 @@
 
 /* Improved hover effect */
 .s-link:hover {
-  background-color: rgba(0, 0, 0, 0.04); /* Lighter background on hover */
+  background-color:  rgba(102, 126, 234, 0.3); /* Lighter background on hover */
   transform: translateX(4px); /* Subtle shift instead of 10px */
 }
 
@@ -70,10 +70,10 @@
   background-color: rgba(4, 27, 42, 0.05); /* Very subtle background */
   font-weight: 600;
   transform: translateX(4px);
-  color: #041b2a;
+  color: #667eea;
 }
 
-/* Add a colored indicator for active link */
+/* Add a colored indicator for active linhok */
 .s-link.active::before {
   content: "";
   position: absolute;
@@ -81,7 +81,7 @@
   top: 25%; /* Center vertically */
   height: 50%; /* Half height of the link */
   width: 4px;
-  background-color: #041b2a; /* Match your primary color */
+  background-color: #667eea; /* Match your primary color */
   border-radius: 0 4px 4px 0;
 }
 
@@ -110,7 +110,7 @@
 
 /* Icon styles inside sidebar links */
 .s-icon {
-  color: #041b2a;
+  color: #667eea;
   font-size: 120%; /* Slightly reduced size */
   opacity: 0.8; /* Slightly transparent for better visual hierarchy */
 }

@@ -1,53 +1,51 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CalendarEvent, CalendarView } from 'angular-calendar';
+import { CalendarView } from 'angular-calendar';
 import { ApiCalendarEvent, CalendarEventService, MyCalendarEvent } from 'src/app/services/calendar-event.service';
+
 export interface DisplayCalendarEvent extends MyCalendarEvent {
-  start: Date;       // for calendar library usage
-  time: string;      // formatted time string like '9 AM'
-  duration: number;  // in hours or whatever unit you want
-  color?: string;    // optional UI property (you can assign some default)
+  start: Date;
+  time: string;
+  duration: number;
+  color?: string;
 }
-
-
 
 @Component({
   selector: 'app-agenda',
   templateUrl: './agenda.component.html',
   styleUrls: ['./agenda.component.css'],
+  encapsulation: ViewEncapsulation.Emulated,
 })
 export class AgendaComponent implements OnInit {
   view: CalendarView = CalendarView.Week;
-  CalendarView = CalendarView; // expose enum to template
+  CalendarView = CalendarView;
   addEventForm!: FormGroup;
   showAddEventPopup = false;
+
   viewDate: Date = new Date(2024, 5, 24); // June 24, 2024
   weekDays: { name: string; date: number; fullName: string; isToday: boolean }[] = [];
   timeSlots: string[] = [
     '7 AM', '8 AM', '9 AM', '10 AM', '11 AM', '12 PM',
-    '1 PM', '2 PM', '3 PM', '4 PM', '5 PM',
+    '1 PM', '2 PM', '3 PM', '4 PM', '5 PM'
   ];
 
   selectedEvent: MyCalendarEvent | null = null;
   events: ApiCalendarEvent[] = [];
 
-  constructor(private calendarService: CalendarEventService,    private fb: FormBuilder,
-) {
+  constructor(
+    private calendarService: CalendarEventService,
+    private fb: FormBuilder
+  ) {
     this.generateWeekDays();
   }
 
   ngOnInit(): void {
-    const userId = 22; // Replace with actual user ID logic
-    this.calendarService.findAllByUser(userId).subscribe({
-      next: (events) => {
-        this.events = events;
-      },
-      error: (err) => {
-        console.error('Error loading events:', err);
-      },
-    });
-    console.log('AgendaComponent initialized with viewDate:', this.events);
-     this.addEventForm = this.fb.group({
+    this.initForm();
+    this.loadEvents();
+  }
+
+  initForm(): void {
+    this.addEventForm = this.fb.group({
       title: ['', Validators.required],
       description: [''],
       location: [''],
@@ -57,6 +55,16 @@ export class AgendaComponent implements OnInit {
       recurrence: ['NONE'],
       reminderMinutes: [15, [Validators.min(0)]],
       status: ['SCHEDULED'],
+    });
+  }
+
+  loadEvents(): void {
+    this.calendarService.findAllByUser(this.getUserId()!).subscribe({
+      next: (events) => {
+        this.events = events;
+        console.log('Events loaded:', this.events);
+      },
+      error: (err) => console.error('Error loading events:', err),
     });
   }
 
@@ -79,12 +87,19 @@ export class AgendaComponent implements OnInit {
   }
 
   getStartOfWeek(date: Date): Date {
-    const day = date.getDay(); // Sunday = 0
+    const day = date.getDay();
     const diff = date.getDate() - day;
     return new Date(date.getFullYear(), date.getMonth(), diff);
   }
-  openAddEventPopup(): void {
+
+  openAddEventPopup(dateTime?: Date): void {
     this.showAddEventPopup = true;
+    if (dateTime) {
+      this.addEventForm.patchValue({
+        startDateTime: dateTime.toISOString().slice(0, 16),
+        endDateTime: new Date(dateTime.getTime() + 3600000).toISOString().slice(0, 16),
+      });
+    }
   }
 
   closeAddEventPopup(): void {
@@ -101,39 +116,75 @@ export class AgendaComponent implements OnInit {
       status: 'SCHEDULED',
     });
   }
-submitAddEvent(): void {
-  if (this.addEventForm.invalid) {
-    alert('Please fill in all required fields.');
-    return;
+
+  submitAddEvent(): void {
+    if (this.addEventForm.invalid) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    const eventPayload: MyCalendarEvent = {
+      userId: this.getUserId(),
+      ...this.addEventForm.value,
+    };
+
+    this.calendarService.createEvent(eventPayload).subscribe({
+      next: (res: any) => {
+        if (res.status && res.status !== 201) {
+          alert(`Failed to add event: ${res.message || 'Unknown error'}`);
+          return;
+        }
+
+        alert('Event added successfully!');
+        this.closeAddEventPopup();
+        this.loadEvents();
+      },
+      error: (err) => {
+        alert('Failed to add event. See console.');
+        console.error(err);
+      },
+    });
   }
-
-  const eventPayload: MyCalendarEvent = {
-    userId: 22, // hardcoded for now
-    ...this.addEventForm.value,
-  };
-
-  this.calendarService.createEvent(eventPayload).subscribe({
-    next: (res) => {
-      alert('Event added successfully!');
-      this.closeAddEventPopup();
-      // Refresh events list
-      this.calendarService.findAllByUser(22).subscribe(events => {
-        this.events = events;
-      });
-    },
-    error: (err) => {
-      alert('Failed to add event. See console.');
-      console.error(err);
-    },
-  });
+getEventDuration(event: MyCalendarEvent): number {
+  const start = new Date(event.startDateTime).getTime();
+  const end = new Date(event.endDateTime).getTime();
+  const durationInMinutes = (end - start) / (1000 * 60);
+  return durationInMinutes;
 }
 
-  isSameDate(date1: Date, date2: Date): boolean {
-    return (
-      date1.getFullYear() === date2.getFullYear() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getDate() === date2.getDate()
-    );
+  getEventsForDay(dayIndex: number): DisplayCalendarEvent[] {
+    const dayDate = new Date(this.getStartOfWeek(this.viewDate));
+    dayDate.setDate(dayDate.getDate() + dayIndex);
+
+    const dayEvents = this.events.filter(event => {
+      const eventDate = new Date(event.startDateTime);
+      return this.isSameDate(eventDate, dayDate);
+    });
+
+    return dayEvents.map(event => {
+      const start = new Date(event.startDateTime);
+      const end = event.endDateTime ? new Date(event.endDateTime) : null;
+
+      const hour = start.getHours();
+      const minutes = start.getMinutes();
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const displayHour = hour % 12 || 12;
+      const timeStr = `${displayHour}${minutes ? ':' + minutes.toString().padStart(2, '0') : ''} ${ampm}`;
+
+      let durationHours = 1;
+      if (end) {
+        durationHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+        if (durationHours <= 0) durationHours = 1;
+      }
+
+      return {
+        ...event,
+        start,
+        time: timeStr,
+        duration: durationHours,
+        color: 'blue',
+      } as DisplayCalendarEvent;
+    });
   }
 
   setView(view: CalendarView): void {
@@ -163,15 +214,8 @@ submitAddEvent(): void {
     if (this.weekDays.length === 0) return '';
     const start = this.weekDays[0];
     const end = this.weekDays[6];
-
-    const startDate = new Date(this.viewDate);
-    startDate.setDate(this.weekDays[0].date);
-
-    const endDate = new Date(this.viewDate);
-    endDate.setDate(this.weekDays[6].date);
-
-    const startMonth = startDate.toLocaleDateString('en-US', { month: 'short' });
-    const endMonth = endDate.toLocaleDateString('en-US', { month: 'short' });
+    const startMonth = new Date(this.viewDate).toLocaleDateString('en-US', { month: 'short' });
+    const endMonth = new Date(this.viewDate).toLocaleDateString('en-US', { month: 'short' });
 
     if (startMonth === endMonth) {
       return `${start.date} - ${end.date} ${startMonth} ${this.viewDate.getFullYear()}`;
@@ -180,21 +224,17 @@ submitAddEvent(): void {
     }
   }
 
-  getCurrentTimeZone(): string {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    return tz.split('/').pop() || tz;
+  isSameDate(date1: Date, date2: Date): boolean {
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
   }
 
-  getCurrentGMTOffset(): string {
-    const offsetMinutes = new Date().getTimezoneOffset();
-    const hours = Math.floor(Math.abs(offsetMinutes) / 60);
-    const minutes = Math.abs(offsetMinutes) % 60;
-    const sign = offsetMinutes > 0 ? '-' : '+';
-    return `GMT${sign}${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-  }
-
-  addEvent(): void {
-    alert('Add event clicked');
+  getUserId(): number | null {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    return user?.id ?? null;
   }
 
   isCurrentHour(time: string): boolean {
@@ -216,25 +256,26 @@ submitAddEvent(): void {
     const hour = now.getHours();
     const minutes = now.getMinutes();
     const startHour = 7;
-    const pixelsPerMinute = 60 / 60;
+    const pixelsPerMinute = 1;
 
     if (hour < startHour || hour > 17) return 0;
 
     return (hour - startHour) * 60 + minutes * pixelsPerMinute;
   }
 
-  timeToPosition(time: string): number {
-    const match = time.match(/(\d+)\s*(AM|PM)/i);
-    if (!match) return 0;
+timeToPosition(dateTime: string): number {
+  const eventDate = new Date(dateTime);
+  const calendarStartHour = 7; // your calendar starts at 7:00 AM
 
-    let hour = parseInt(match[1], 10);
-    if (match[2].toUpperCase() === 'PM' && hour !== 12) hour += 12;
-    if (match[2].toUpperCase() === 'AM' && hour === 12) hour = 0;
+  const hours = eventDate.getHours();
+  const minutes = eventDate.getMinutes();
 
-    const startHour = 7;
-    const pixelsPerHour = 60;
-    return (hour - startHour) * pixelsPerHour;
-  }
+  const totalMinutesFromStart = (hours - calendarStartHour) * 60 + minutes;
+
+  const pixelsPerMinute = 70 / 60; // ≈ 1.1667
+  return totalMinutesFromStart * pixelsPerMinute;
+}
+
 
   isBusinessHour(time: string): boolean {
     const match = time.match(/(\d+)\s*(AM|PM)/i);
@@ -247,49 +288,37 @@ submitAddEvent(): void {
     return hour >= 8 && hour <= 17;
   }
 
-getEventsForDay(dayIndex: number): DisplayCalendarEvent[] {
-  const dayDate = new Date(this.getStartOfWeek(this.viewDate));
-  dayDate.setDate(dayDate.getDate() + dayIndex);
+  getCurrentTimeZone(): string {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return tz.split('/').pop() || tz;
+  }
 
-  const dayEvents = this.events.filter(event => {
-    const eventDate = new Date(event.startDateTime);
-    return (
-      eventDate.getFullYear() === dayDate.getFullYear() &&
-      eventDate.getMonth() === dayDate.getMonth() &&
-      eventDate.getDate() === dayDate.getDate()
-    );
-  });
-
-  return dayEvents.map(event => {
-    const start = new Date(event.startDateTime);
-    
-    let hour = start.getHours();
-    let minutes = start.getMinutes();
-    let ampm = hour >= 12 ? 'PM' : 'AM';
-    let displayHour = hour % 12 || 12;
-    const timeStr = `${displayHour}${minutes > 0 ? ':' + minutes.toString().padStart(2, '0') : ''} ${ampm}`;
-
-    let durationHours = 1;
-    if (event.endDateTime) {
-      durationHours = (new Date(event.endDateTime).getTime() - start.getTime()) / (1000 * 60 * 60);
-      if (durationHours <= 0) durationHours = 1;
-    }
-
-    // Assign default color or compute based on status, type, etc.
-    const color = 'blue';  // example static color
-
-    return {
-      ...event,
-      start,
-      time: timeStr,
-      duration: durationHours,
-      color,
-    } as DisplayCalendarEvent;
-  });
-}
-
+  getCurrentGMTOffset(): string {
+    const offsetMinutes = new Date().getTimezoneOffset();
+    const hours = Math.floor(Math.abs(offsetMinutes) / 60);
+    const minutes = Math.abs(offsetMinutes) % 60;
+    const sign = offsetMinutes > 0 ? '-' : '+';
+    return `GMT${sign}${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  }
 
   selectEvent(event: MyCalendarEvent): void {
     this.selectedEvent = event;
   }
+    addEvent(dateTime?: Date) {
+  this.showAddEventPopup = true;
+  if (dateTime) {
+    this.addEventForm.patchValue({
+      startDateTime: dateTime.toISOString().slice(0,16),
+      endDateTime: new Date(dateTime.getTime() + 60 * 60 * 1000).toISOString().slice(0,16),
+    });
+  }
+}
+openEventDetails(event: MyCalendarEvent) {
+  this.selectedEvent = event;
+}
+
+closeEventDetails() {
+  this.selectedEvent = null;
+}
+
 }

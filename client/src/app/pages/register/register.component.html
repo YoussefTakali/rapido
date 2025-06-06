@@ -1,0 +1,181 @@
+<div class="register-container">
+  <div class="register-wrapper">
+    <div class="register-header">
+      <div class="logo">
+        <div class="logo-icon"></div>
+      </div>
+      <h2 class="form-title">Create Account</h2>
+      <p class="form-subtitle">Join us today and get started</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="register-form">
+      <div class="name-row">
+        <div class="form-group half-width">
+          <label for="firstName" class="form-label">First Name</label>
+          <div class="input-wrapper">
+            <input
+              type="text"
+              id="firstName"
+              name="firstName"
+              [(ngModel)]="firstName"
+              required
+              placeholder="John"
+              class="form-input"
+              [class.error]="errorMessage"
+            />
+            <div class="input-icon user-icon"></div>
+          </div>
+        </div>
+
+        <div class="form-group half-width">
+          <label for="lastName" class="form-label">Last Name</label>
+          <div class="input-wrapper">
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              [(ngModel)]="lastName"
+              required
+              placeholder="Doe"
+              class="form-input"
+              [class.error]="errorMessage"
+            />
+            <div class="input-icon user-icon"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email" class="form-label">Email Address</label>
+        <div class="input-wrapper">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="email"
+            required
+            email
+            placeholder="you@example.com"
+            class="form-input"
+            [class.error]="errorMessage"
+          />
+          <div class="input-icon email-icon"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <div class="input-wrapper">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            name="password"
+            [(ngModel)]="password"
+            required
+            placeholder="Create a strong password"
+            class="form-input"
+            [class.error]="errorMessage"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+          >
+            <div class="eye-icon" [class.eye-closed]="!showPassword"></div>
+          </button>
+        </div>
+        <div *ngIf="password" class="password-strength">
+          <div class="strength-bar">
+            <div 
+              class="strength-fill" 
+              [class.weak]="getPasswordStrength() === 'weak'"
+              [class.medium]="getPasswordStrength() === 'medium'"
+              [class.strong]="getPasswordStrength() === 'strong'"
+            ></div>
+          </div>
+          <span class="strength-text" [class]="getPasswordStrength()">
+            {{ getPasswordStrengthText() }}
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <div class="input-wrapper">
+          <input
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            id="confirmPassword"
+            name="confirmPassword"
+            [(ngModel)]="confirmPassword"
+            required
+            placeholder="Confirm your password"
+            class="form-input"
+            [class.error]="errorMessage"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="toggleConfirmPasswordVisibility()"
+            [attr.aria-label]="showConfirmPassword ? 'Hide password' : 'Show password'"
+          >
+            <div class="eye-icon" [class.eye-closed]="!showConfirmPassword"></div>
+          </button>
+        </div>
+      </div>
+
+      <!-- <div class="form-group">
+        <label class="checkbox-wrapper terms-wrapper">
+          <input 
+            type="checkbox" 
+            class="checkbox" 
+            [(ngModel)]="acceptTerms" 
+            name="acceptTerms"
+            required
+          >
+          <span class="checkmark"></span>
+          <span class="checkbox-label">
+            I agree to the 
+            <button type="button" class="link-button" (click)="onTermsClick()">
+              Terms of Service
+            </button>
+            and 
+            <button type="button" class="link-button" (click)="onPrivacyClick()">
+              Privacy Policy
+            </button>
+          </span>
+        </label>
+      </div> -->
+
+      <button 
+        type="submit" 
+        [disabled]="registerForm.invalid || isLoading" 
+        class="btn-submit"
+        [class.loading]="isLoading"
+      >
+        <span *ngIf="!isLoading">Create Account</span>
+        <span *ngIf="isLoading" class="loading-spinner"></span>
+        <span *ngIf="isLoading">Creating account...</span>
+      </button>
+
+      <div *ngIf="errorMessage" class="error-message">
+        <div class="error-icon"></div>
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="success-message">
+        <div class="success-icon"></div>
+        {{ successMessage }}
+      </div>
+    </form>
+
+    <div class="register-footer">
+      <p class="signin-text">
+        Already have an account? 
+        <button type="button" class="signin-link" (click)="onSignIn()">
+          Sign in here
+        </button>
+      </p>
+    </div>
+  </div>
+</div>

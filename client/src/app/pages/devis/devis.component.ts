@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DevisService } from 'src/app/services/devis.service';
 import { Options } from '@angular-slider/ngx-slider';
 import { Router } from '@angular/router';
-import { DevisFormData, EtatDevis } from 'src/app/models/Devis';
+import { DevisFormData, EtatDevis } from 'src/app/models/DevisUpdate';
 import { ProfileService } from 'src/app/services/profile.service';
 
 
@@ -33,15 +33,24 @@ profiles: any[] = [];
     translate: (value: number): string => value.toLocaleString('fr-FR') + ' €',
   };
 loadProfiles(id: number): void {
-  this.profileService.getProfilesByUser(id).subscribe({
-    next: (data) => {
-      this.profiles = data;
-      console.log('Profiles loaded:', this.profiles);
-    },
-    error: (error) => {
-      console.error('Erreur récupération profils', error);
-    }
-  });
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const role = user?.role;
+
+  if (role === 'EMPLOYEE') {
+    this.profileService.getProfilesByUser(id).subscribe({
+      next: (profiles) => this.profiles = profiles,
+      error: (error) => console.error('Error loading profiles for EMPLOYEE:', error)
+    });
+  } else if (role === 'ADMIN') {
+    this.profileService.getProfiles().subscribe({
+      next: (profiles) => this.profiles = profiles,
+      error: (error) => console.error('Error loading profiles for ADMIN:', error)
+    });
+  } else {
+    console.warn('Unknown role or user not logged in');
+  }
+
+
 }
   filterDepartFrom: string = '';
   filterDepartTo: string = '';
@@ -90,7 +99,11 @@ onProfileCheckboxChange(event: any, profileId: number) {
   this.applyFilters();
 }
 
-  loadDevis(id : number) {
+loadDevis(id: number) {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const role = user?.role;
+
+  if (role === 'EMPLOYEE') {
     this.devisService.getDevisById(id).subscribe({
       next: (data) => {
         this.devisList = data;
@@ -98,10 +111,25 @@ onProfileCheckboxChange(event: any, profileId: number) {
         this.applyFilterAndPagination();
       },
       error: (error) => {
-        console.error('Error fetching devis:', error);
+        console.error('Error fetching devis for EMPLOYEE:', error);
       }
     });
+  } else if (role === 'ADMIN') {
+    this.devisService.getAllDevis().subscribe({
+      next: (data) => {
+        this.devisList = data;
+        this.filteredDevisList = [...this.devisList];
+        this.applyFilterAndPagination();
+      },
+      error: (error) => {
+        console.error('Error fetching all devis for ADMIN:', error);
+      }
+    });
+  } else {
+    console.warn('Unknown role or user not logged in');
   }
+}
+
 
   applyFilterAndPagination() {
     const term = this.searchTerm.toLowerCase();

@@ -1,0 +1,226 @@
+<div class="form-container">
+  <div class="progress-container">
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="progressPercentage"></div>
+    </div>
+    <div class="progress-text">{{ progressPercentage.toFixed(0) }}% complet</div>
+  </div>
+
+  <div class="stepper">
+    <!-- Step indicators -->
+    <div class="step-indicators">
+      <div class="step" [class.active]="currentStep === 0" [class.completed]="currentStep > 0">Société</div>
+      <div class="step" [class.active]="currentStep === 1" [class.completed]="currentStep > 1">Assurance</div>
+      <div class="step" [class.active]="currentStep === 2" [class.completed]="currentStep > 2">Facturation</div>
+      <div class="step" [class.active]="currentStep === 3" [class.completed]="currentStep > 3">CGV</div>
+    </div>
+
+    <!-- Step 1: Société -->
+    <div class="step-content first-step" *ngIf="currentStep === 0">
+      <form [formGroup]="companyFormGroup">
+        <h2>Informations sur la société</h2>
+        
+        <div class="form-columns">
+          <div class="left-column">
+            <div class="form-group">
+              <label for="companyName">Nom de la société *</label>
+              <input type="text" id="companyName" formControlName="companyName">
+              <div class="error-message" *ngIf="companyFormGroup.get('companyName')?.hasError('required') && companyFormGroup.get('companyName')?.touched">
+                Ce champ est obligatoire
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="formeJuridique">Forme juridique *</label>
+              <input type="text" id="formeJuridique" formControlName="formeJuridique">
+              <div class="error-message" *ngIf="companyFormGroup.get('formeJuridique')?.hasError('required') && companyFormGroup.get('formeJuridique')?.touched">
+                Ce champ est obligatoire
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="capitalSocial">Capital social *</label>
+              <div class="input-with-prefix">
+                <span class="prefix">€</span>
+                <input type="number" id="capitalSocial" formControlName="capitalSocial" step="0.01">
+              </div>
+              <div class="error-message" *ngIf="companyFormGroup.get('capitalSocial')?.hasError('required') && companyFormGroup.get('capitalSocial')?.touched">
+                Ce champ est obligatoire
+              </div>
+              <div class="error-message" *ngIf="companyFormGroup.get('capitalSocial')?.hasError('min') && companyFormGroup.get('capitalSocial')?.touched">
+                Le montant doit être positif
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="siret">SIRET *</label>
+              <input type="text" id="siret" formControlName="siret">
+              <div class="error-message" *ngIf="companyFormGroup.get('siret')?.hasError('required') && companyFormGroup.get('siret')?.touched">
+                Ce champ est obligatoire
+              </div>
+            </div>
+          </div>
+
+          <div class="right-column">
+            <div class="form-group">
+              <label for="tva">Numéro de TVA *</label>
+              <input type="text" id="tva" formControlName="tva">
+              <div class="error-message" *ngIf="companyFormGroup.get('tva')?.hasError('required') && companyFormGroup.get('tva')?.touched">
+                Ce champ est obligatoire
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="rcsOuRm">RCS ou RM *</label>
+              <input type="text" id="rcsOuRm" formControlName="rcsOuRm">
+              <div class="error-message" *ngIf="companyFormGroup.get('rcsOuRm')?.hasError('required') && companyFormGroup.get('rcsOuRm')?.touched">
+                Ce champ est obligatoire
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="adresse">Adresse *</label>
+              <input type="text" id="adresse" formControlName="adresse">
+              <div class="error-message" *ngIf="companyFormGroup.get('adresse')?.hasError('required') && companyFormGroup.get('adresse')?.touched">
+                Ce champ est obligatoire
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="logo">Logo (optionnel)</label>
+              <input type="file" id="logo" (change)="handleLogoUpload($event)" accept="image/*">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn next" (click)="goToStep(1)" [disabled]="companyFormGroup.invalid">Suivant</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 2: Assurance -->
+    <div class="step-content" *ngIf="currentStep === 1">
+      <form [formGroup]="assuranceFormGroup">
+        <h2>Informations d'assurance</h2>
+        
+        <div class="form-group">
+          <label for="nomAssurance">Nom de l'assurance *</label>
+          <input type="text" id="nomAssurance" formControlName="nomAssurance">
+          <div class="error-message" *ngIf="assuranceFormGroup.get('nomAssurance')?.hasError('required') && assuranceFormGroup.get('nomAssurance')?.touched">
+            Ce champ est obligatoire
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="montantMobilier">Montant mobilier *</label>
+          <div class="input-with-prefix">
+            <span class="prefix">€</span>
+            <input type="number" id="montantMobilier" formControlName="montantMobilier" step="0.01">
+          </div>
+          <div class="error-message" *ngIf="assuranceFormGroup.get('montantMobilier')?.hasError('required') && assuranceFormGroup.get('montantMobilier')?.touched">
+            Ce champ est obligatoire
+          </div>
+          <div class="error-message" *ngIf="assuranceFormGroup.get('montantMobilier')?.hasError('min') && assuranceFormGroup.get('montantMobilier')?.touched">
+            Le montant doit être positif
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="montantMaxParObjet">Montant maximum par objet *</label>
+          <div class="input-with-prefix">
+            <span class="prefix">€</span>
+            <input type="number" id="montantMaxParObjet" formControlName="montantMaxParObjet" step="0.01">
+          </div>
+          <div class="error-message" *ngIf="assuranceFormGroup.get('montantMaxParObjet')?.hasError('required') && assuranceFormGroup.get('montantMaxParObjet')?.touched">
+            Ce champ est obligatoire
+          </div>
+          <div class="error-message" *ngIf="assuranceFormGroup.get('montantMaxParObjet')?.hasError('min') && assuranceFormGroup.get('montantMaxParObjet')?.touched">
+            Le montant doit être positif
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="franchise">Franchise *</label>
+          <div class="input-with-prefix">
+            <span class="prefix">€</span>
+            <input type="number" id="franchise" formControlName="franchise" step="0.01">
+          </div>
+          <div class="error-message" *ngIf="assuranceFormGroup.get('franchise')?.hasError('required') && assuranceFormGroup.get('franchise')?.touched">
+            Ce champ est obligatoire
+          </div>
+          <div class="error-message" *ngIf="assuranceFormGroup.get('franchise')?.hasError('min') && assuranceFormGroup.get('franchise')?.touched">
+            Le montant doit être positif
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn previous" (click)="goToStep(0)">Précédent</button>
+          <button type="button" class="btn next" (click)="goToStep(2)" [disabled]="assuranceFormGroup.invalid">Suivant</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 3: Facturation -->
+    <div class="step-content" *ngIf="currentStep === 2">
+      <form [formGroup]="billingFormGroup">
+        <h2>Informations de facturation</h2>
+
+        <div class="form-group">
+          <label for="pourcentageAcompte">Pourcentage Acompte *</label>
+          <div class="input-with-suffix">
+            <input type="number" id="pourcentageAcompte" formControlName="pourcentageAcompte" step="0.01">
+            <span class="suffix">%</span>
+          </div>
+          <div class="error-message" *ngIf="billingFormGroup.get('pourcentageAcompte')?.hasError('required') && billingFormGroup.get('pourcentageAcompte')?.touched">
+            Ce champ est obligatoire
+          </div>
+          <div class="error-message" *ngIf="(billingFormGroup.get('pourcentageAcompte')?.hasError('min') || billingFormGroup.get('pourcentageAcompte')?.hasError('max')) && billingFormGroup.get('pourcentageAcompte')?.touched">
+            La valeur doit être comprise entre 0 et 100
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bic">BIC *</label>
+          <input type="text" id="bic" formControlName="bic">
+          <div class="error-message" *ngIf="billingFormGroup.get('bic')?.hasError('required') && billingFormGroup.get('bic')?.touched">
+            Ce champ est obligatoire
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="iban">IBAN *</label>
+          <input type="text" id="iban" formControlName="iban">
+          <div class="error-message" *ngIf="billingFormGroup.get('iban')?.hasError('required') && billingFormGroup.get('iban')?.touched">
+            Ce champ est obligatoire
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn previous" (click)="goToStep(1)">Précédent</button>
+          <button type="button" class="btn next" (click)="goToStep(3)" [disabled]="billingFormGroup.invalid">Suivant</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 4: CGV -->
+    <div class="step-content" *ngIf="currentStep === 3">
+      <form [formGroup]="cgvFormGroup">
+        <h2>Conditions Générales de Vente</h2>
+        
+        <div class="form-group">
+          <label for="pdfCgv">Télécharger les CGV (PDF) *<br/> client doit accepter vos CGV avant le déménagement. Pour cela nous vous recommandons de les insérer ci dessous afin qu’elles soient jointes au devis pdf.</label>
+          <input type="file" id="pdfCgv" (change)="handleFileInput($event)" accept=".pdf">
+          <div class="error-message" *ngIf="!cgvFormGroup.get('pdfCgv')?.value && cgvFormGroup.get('pdfCgv')?.touched">
+            Veuillez télécharger un fichier PDF
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn previous" (click)="goToStep(2)">Précédent</button>
+          <button type="button" class="btn submit" (click)="submitForm()" [disabled]="!allFormsValid()">Soumettre</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

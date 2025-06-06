@@ -3,3 +3,6 @@ html{
 z-index: 3;
 @import url('https://geistsans.com/font.css');
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

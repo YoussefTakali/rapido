@@ -1,0 +1,223 @@
+<div class="user-profile-page">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Loading profile...</p>
+  </div>
+
+  <!-- Profile Content -->
+  <div *ngIf="!isLoading && user" class="user-profile-container">
+    <!-- Navigation -->
+    <div class="profile-navigation">
+      <button routerLink="/users" class="back-btn">
+        <div class="back-icon"></div>
+        Back to Users
+      </button>
+      
+      <div class="nav-actions">
+        <button class="nav-action-btn message-btn" (click)="onMessageUser()" title="Send Message">
+          <div class="message-icon"></div>
+        </button>
+        <button class="nav-action-btn call-btn" (click)="onCallUser()" title="Call User">
+          <div class="phone-icon"></div>
+        </button>
+        <button class="nav-action-btn email-btn" (click)="onEmailUser()" title="Send Email">
+          <div class="email-icon"></div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="header-background"></div>
+      <div class="header-content">
+        <div class="avatar-section">
+          <div class="avatar-wrapper">
+            <img
+              *ngIf="user.profilePicture && !imageError"
+  [src]="'http://localhost:3000/uploads/profile-pictures/' + user.profilePicture"               [alt]="user.name"
+              (error)="onImageError()"
+              (load)="onImageLoad()"
+              class="avatar-img"
+            />
+            <div class="avatar-fallback" *ngIf="!user.profilePicture || imageError">
+              {{ getInitials(user.name) }}
+            </div>
+            <div class="online-indicator" [class.online]="user.isOnline"></div>
+          </div>
+          
+          <div class="status-info">
+            <span class="status-text" [class.online-text]="user.isOnline">
+              {{ user.isOnline ? 'Online' : getLastSeenText(user.lastSeen!) }}
+            </span>
+          </div>
+        </div>
+
+        <div class="user-info">
+          <div class="user-header">
+            <h1 class="user-name">{{ user.name }}</h1>
+            <span class="role-badge" [class]="getRoleBadgeClass(user.role)">
+              {{ user.role }}
+            </span>
+          </div>
+          
+          <p class="user-bio" *ngIf="user.bio">{{ user.bio }}</p>
+          
+          <div class="quick-info">
+            <div class="info-item" *ngIf="user.department">
+              <div class="info-icon building-icon"></div>
+              <span>{{ user.department }}</span>
+            </div>
+            <div class="info-item" *ngIf="user.location">
+              <div class="info-icon location-icon"></div>
+              <span>{{ user.location }}</span>
+            </div>
+            <div class="info-item" *ngIf="user.createdAt">
+              <div class="info-icon calendar-icon"></div>
+              <span>Joined {{ user.createdAt | date: 'MMM yyyy' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Content Grid -->
+    <div class="profile-content">
+      <!-- Contact Information -->
+      <div class="info-card">
+        <div class="card-header">
+          <h3 class="card-title">Contact Information</h3>
+          <div class="contact-icon"></div>
+        </div>
+        <div class="card-content">
+          <div class="detail-item">
+            <div class="detail-icon email-detail-icon"></div>
+            <div class="detail-content">
+              <span class="detail-label">Email</span>
+              <span class="detail-value">{{ user.email }}</span>
+            </div>
+          </div>
+          
+          <div class="detail-item" *ngIf="user.phoneNumber">
+            <div class="detail-icon phone-detail-icon"></div>
+            <div class="detail-content">
+              <span class="detail-label">Phone</span>
+              <span class="detail-value">{{ user.phoneNumber }}</span>
+            </div>
+          </div>
+          
+          <div class="detail-item" *ngIf="user.dateOfBirth">
+            <div class="detail-icon birthday-icon"></div>
+            <div class="detail-content">
+              <span class="detail-label">Birthday</span>
+              <span class="detail-value">
+                <!-- {{ user.dateOfBirth | date: 'MMMM d, yyyy' }} ({{ getAge(new Date(user.dateOfBirth)) }} years old) -->
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills -->
+      <div class="info-card" *ngIf="user.skills && user.skills.length > 0">
+        <div class="card-header">
+          <h3 class="card-title">Skills & Expertise</h3>
+          <div class="skills-icon"></div>
+        </div>
+        <div class="card-content">
+          <div class="skills-container">
+            <span *ngFor="let skill of user.skills" class="skill-tag">
+              {{ skill }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Links -->
+<div class="info-card" *ngIf="user.profiles && user.profiles.length > 0">
+  <div class="card-header">
+    <h3 class="card-title">Profiles</h3>
+    <div class="profile-icon"></div>
+  </div>
+  <div class="card-content">
+    <div class="profiles-list">
+      <span *ngFor="let profile of user.profiles" class="profile-tag">
+        {{  profile.profileId  || 'Profile' }}
+      </span>
+    </div>
+  </div>
+</div>
+
+
+      <!-- Account Details -->
+      <div class="info-card">
+        <div class="card-header">
+          <h3 class="card-title">Account Details</h3>
+          <div class="account-icon"></div>
+        </div>
+        <div class="card-content">
+          <div class="detail-item">
+            <div class="detail-icon user-detail-icon"></div>
+            <div class="detail-content">
+              <span class="detail-label">User ID</span>
+              <span class="detail-value">{{ user.id }}</span>
+            </div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-icon role-icon"></div>
+            <div class="detail-content">
+              <span class="detail-label">Role</span>
+              <span class="detail-value">{{ user.role }}</span>
+            </div>
+          </div>
+          
+          <div class="detail-item" *ngIf="user.createdAt">
+            <div class="detail-icon date-icon"></div>
+            <div class="detail-content">
+              <span class="detail-label">Member Since</span>
+              <span class="detail-value">{{ user.createdAt | date: 'fullDate' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="profile-actions">
+      <button class="action-btn primary-btn" (click)="onEditUser(user, $event)">
+        <div class="edit-icon"></div>
+        Edit Profile
+      </button>
+      <button class="action-btn danger-btn" (click)="onDeleteUser(user, $event)">
+        <div class="delete-icon"></div>
+        Delete User
+      </button>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div *ngIf="showDeleteConfirm" class="modal-overlay" (click)="cancelDelete()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Confirm Deletion</h3>
+        <button class="modal-close" (click)="cancelDelete()">
+          <div class="close-icon"></div>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="warning-icon"></div>
+        <p class="modal-text">
+          Are you sure you want to delete <strong>{{ user.name }}</strong>? 
+          This action cannot be undone.
+        </p>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="modal-btn cancel-btn" (click)="cancelDelete()">Cancel</button>
+        <button class="modal-btn confirm-btn" (click)="confirmDelete()">Delete User</button>
+      </div>
+    </div>
+  </div>
+</div>

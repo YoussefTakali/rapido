@@ -1,60 +1,60 @@
-<div class="calendar-container">
-  <!-- Header -->
-  <div class="calendar-header">
-    <div class="header-left">
-      <div class="calendar-navigation">
-        <button class="nav-button" (click)="previousWeek()">
+<div class="agenda-container">
+  <!-- Toolbar Header -->
+  <div class="agenda-toolbar">
+    <div class="toolbar-section toolbar-left">
+      <div class="navigation-controls">
+        <button class="nav-btn nav-prev" (click)="previousWeek()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="15,18 9,12 15,6"></polyline>
           </svg>
         </button>
 
-        <button class="today-button" (click)="setToday()">
+        <button class="nav-btn today-btn" (click)="setToday()">
           <span>Today</span>
         </button>
 
-        <button class="nav-button" (click)="nextWeek()">
+        <button class="nav-btn nav-next" (click)="nextWeek()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="9,18 15,12 9,6"></polyline>
           </svg>
         </button>
       </div>
 
-      <div class="current-date">
-        <h2 class="month-year">{{ getCurrentMonthYear() }}</h2>
-        <p class="date-range">{{ getWeekDateRange() }}</p>
+      <div class="date-display">
+        <h2 class="current-month-year">{{ getCurrentMonthYear() }}</h2>
+        <p class="current-date-range">{{ getWeekDateRange() }}</p>
       </div>
     </div>
 
-    <div class="header-center">
-      <div class="view-selector">
+    <div class="toolbar-section toolbar-center">
+      <div class="view-toggle">
         <button
           *ngFor="let viewOption of [CalendarView.Day, CalendarView.Week, CalendarView.Month]"
-          class="view-button"
-          [class.active]="view === viewOption"
+          class="view-btn"
+          [class.view-active]="view === viewOption"
           (click)="setView(viewOption)">
           {{ viewOption }}
         </button>
       </div>
     </div>
 
-    <div class="header-right">
-      <div class="search-container">
+    <div class="toolbar-section toolbar-right">
+      <div class="search-box">
         <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"></circle>
           <path d="m21 21-4.35-4.35"></path>
         </svg>
-        <input type="text" placeholder="Search events..." class="search-input" />
+        <input type="text" placeholder="Search events..." class="search-field" />
       </div>
 
-      <div class="timezone-container">
-        <div class="timezone">
-          <span class="tz-name">{{ getCurrentTimeZone() }}</span>
+      <div class="timezone-display">
+        <div class="timezone-info">
+          <span class="tz-label">{{ getCurrentTimeZone() }}</span>
           <small class="tz-offset">{{ getCurrentGMTOffset() }}</small>
         </div>
       </div>
 
-      <button class="add-event-button" (click)="addEvent()">
+      <button class="add-btn" (click)="addEvent()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="12" y1="5" x2="12" y2="19"></line>
           <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -64,75 +64,72 @@
     </div>
   </div>
 
-  <!-- Week View Calendar -->
-  <div class="calendar-grid" *ngIf="view === CalendarView.Week">
-    <!-- Days Header -->
-    <div class="days-header">
-      <div class="time-column-header">
-        <div class="time-zone-label">{{ getCurrentTimeZone() }}</div>
+  <!-- Calendar Content -->
+  <div class="agenda-content" *ngIf="view === CalendarView.Week">
+    <!-- Week Header -->
+    <div class="week-header">
+      <div class="time-header">
+        <div class="timezone-label">{{ getCurrentTimeZone() }}</div>
       </div>
-      <div class="day-header" *ngFor="let day of weekDays; let i = index" [class.today]="day.isToday">
+      <div class="day-header" *ngFor="let day of weekDays; let i = index" [class.is-today]="day.isToday">
         <div class="day-name">{{ day.name }}</div>
-        <div class="day-date" [class.today-date]="day.isToday">
+        <div class="day-date" [class.today-highlight]="day.isToday">
           <span class="date-number">{{ day.date }}</span>
-          <div class="today-indicator" *ngIf="day.isToday"></div>
+          <div class="today-dot" *ngIf="day.isToday"></div>
         </div>
       </div>
     </div>
 
-    <!-- Time Grid -->
-    <div class="time-grid">
+    <!-- Calendar Grid -->
+    <div class="calendar-body">
       <!-- Time Column -->
-      <div class="time-column">
-        <div class="time-slot" *ngFor="let time of timeSlots; let i = index" [class.current-hour]="isCurrentHour(time)">
-          <span class="time-label">{{ time }}</span>
-          <div class="current-time-indicator" *ngIf="isCurrentHour(time)"></div>
+      <div class="time-sidebar">
+        <div class="time-slot" *ngFor="let time of timeSlots; let i = index" [class.current-time]="isCurrentHour(time)">
+          <span class="time-text">{{ time }}</span>
+          <div class="time-indicator" *ngIf="isCurrentHour(time)"></div>
         </div>
       </div>
 
-      <!-- Days Columns -->
-      <div class="days-container">
+      <!-- Days Grid -->
+      <div class="days-grid">
         <div class="day-column" *ngFor="let day of weekDays; let dayIndex = index" [class.today-column]="day.isToday">
-          <!-- Time slots background -->
+          <!-- Background Time Slots -->
           <div
-            class="time-slot-bg"
+            class="time-cell"
             *ngFor="let time of timeSlots; let i = index"
-            [class.current-hour-bg]="isCurrentHour(time)"
-            [class.business-hours]="isBusinessHour(time)">
+            [class.current-time-bg]="isCurrentHour(time)"
+            [class.business-time]="isBusinessHour(time)">
           </div>
 
-          <!-- Current time line -->
-          <div class="current-time-line" *ngIf="day.isToday" [style.top.px]="getCurrentTimePosition()"></div>
+          <!-- Current Time Indicator -->
+          <div class="current-time-marker" *ngIf="day.isToday" [style.top.px]="getCurrentTimePosition()"></div>
 
-          <!-- Events -->
-          <div class="event-container">
-  <div
-    class="event"
-    *ngFor="let event of getEventsForDay(dayIndex)"
-    [class]="'event-' + event.color"
-    [style.top.px]="timeToPosition(event.time)"
-    [style.height.px]="(event.duration || 1) * 60"
-    (click)="selectEvent(event)"
-    [class.selected]="selectedEvent === event"
-  >
-    <div class="event-content">
-      <div class="event-time">{{ event.time }}</div>
-      <div class="event-title">{{ event.title }}</div>
-      <div class="event-description" *ngIf="event.description">{{ event.description }}</div>
-      <!-- Attendees section removed -->
-    </div>
-    <div class="event-resize-handle"></div>
-  </div>
-</div>
-
+          <!-- Events Container -->
+          <div class="events-wrapper">
+          <div
+            class="event-item"
+            *ngFor="let event of getEventsForDay(dayIndex)"
+            [class]="'event-status-' + event.status.toLowerCase()"
+            [style.top.px]="timeToPosition(event.startDateTime)"
+            [style.height.px]="getEventDuration(event)"
+            (click)="openEventDetails(event)"
+            [class.event-selected]="selectedEvent === event">
+              <div class="event-body">
+                <div class="event-time">{{ event.time }}</div>
+                <div class="event-title">{{ event.title }}</div>
+                <div class="event-desc" *ngIf="event.description">{{ event.description }}</div>
+              </div>
+              <div class="event-resize"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Other Views Placeholder -->
-  <div *ngIf="view !== CalendarView.Week" class="view-placeholder">
-    <div class="placeholder-content">
+  <!-- Other Views -->
+  <div *ngIf="view !== CalendarView.Week" class="other-view">
+    <div class="placeholder-wrapper">
       <div class="placeholder-icon">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -143,52 +140,51 @@
       </div>
       <h3>{{ view }} View</h3>
       <p>{{ view }} view implementation coming soon</p>
-      <button class="back-to-week" (click)="setView(CalendarView.Week)">Back to Week View</button>
+      <button class="back-btn" (click)="setView(CalendarView.Week)">Back to Week View</button>
     </div>
   </div>
 </div>
-<!-- Add Event Button -->
-<button (click)="addEvent()">Add Event</button>
 
-<!-- Add Event Popup Modal -->
-<div class="modal-backdrop" *ngIf="showAddEventPopup" (click)="closeAddEventPopup()"></div>
-<div class="modal" *ngIf="showAddEventPopup">
+<!-- Modal Backdrop -->
+<div class="modal-overlay" *ngIf="showAddEventPopup" (click)="closeAddEventPopup()"></div>
+
+<!-- Add Event Modal -->
+<div class="event-modal" *ngIf="showAddEventPopup">
   <h2>Add New Event</h2>
   <form [formGroup]="addEventForm" (ngSubmit)="submitAddEvent()">
-
-    <label>
+    <label class="form-field">
       Title*:
-      <input formControlName="title" required />
+      <input formControlName="title" required class="input-field" />
     </label>
 
-    <label>
+    <label class="form-field">
       Description:
-      <textarea formControlName="description"></textarea>
+      <textarea formControlName="description" class="textarea-field"></textarea>
     </label>
 
-    <label>
+    <label class="form-field">
       Location:
-      <input formControlName="location" />
+      <input formControlName="location" class="input-field" />
     </label>
 
-    <label>
+    <label class="form-field">
       Start Date & Time*:
-      <input type="datetime-local" formControlName="startDateTime" required />
+      <input type="datetime-local" formControlName="startDateTime" required class="input-field" />
     </label>
 
-    <label>
+    <label class="form-field">
       End Date & Time*:
-      <input type="datetime-local" formControlName="endDateTime" required />
+      <input type="datetime-local" formControlName="endDateTime" required class="input-field" />
     </label>
 
-    <label>
-      All Day:
+    <label class="form-field checkbox-field">
       <input type="checkbox" formControlName="isAllDay" />
+      All Day
     </label>
 
-    <label>
+    <label class="form-field">
       Recurrence:
-      <select formControlName="recurrence">
+      <select formControlName="recurrence" class="select-field">
         <option value="NONE">None</option>
         <option value="DAILY">Daily</option>
         <option value="WEEKLY">Weekly</option>
@@ -196,24 +192,38 @@
       </select>
     </label>
 
-    <label>
+    <label class="form-field">
       Reminder (minutes):
-      <input type="number" formControlName="reminderMinutes" min="0" />
+      <input type="number" formControlName="reminderMinutes" min="0" class="input-field" />
     </label>
 
-    <label>
+    <label class="form-field">
       Status:
-      <select formControlName="status">
+      <select formControlName="status" class="select-field">
         <option value="SCHEDULED">Scheduled</option>
         <option value="CANCELLED">Cancelled</option>
         <option value="COMPLETED">Completed</option>
       </select>
     </label>
 
-    <div class="buttons">
-      <button type="submit" [disabled]="addEventForm.invalid">Submit</button>
-      <button type="button" (click)="closeAddEventPopup()">Cancel</button>
+    <div class="modal-actions">
+      <button type="submit" [disabled]="addEventForm.invalid" class="btn-primary">Submit</button>
+      <button type="button" (click)="closeAddEventPopup()" class="btn-secondary">Cancel</button>
     </div>
-
   </form>
+</div>
+<!-- Event Details Modal -->
+<div class="event-modal" *ngIf="selectedEvent">
+  <h2>Event Details</h2>
+  <div class="event-details">
+    <p><strong>Title:</strong> {{ selectedEvent.title }}</p>
+    <p *ngIf="selectedEvent.description"><strong>Description:</strong> {{ selectedEvent.description }}</p>
+    <p *ngIf="selectedEvent.location"><strong>Location:</strong> {{ selectedEvent.location }}</p>
+    <p><strong>Start:</strong> {{ selectedEvent.startDateTime | date: 'short' }}</p>
+    <p><strong>End:</strong> {{ selectedEvent.endDateTime | date: 'short' }}</p>
+    <p><strong>Status:</strong> {{ selectedEvent.status }}</p>
+  </div>
+  <div class="modal-actions">
+    <button class="btn-secondary" (click)="closeEventDetails()">Close</button>
+  </div>
 </div>

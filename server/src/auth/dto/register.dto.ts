@@ -10,10 +10,10 @@ export class RegisterDto {
   @MinLength(6)
   password: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   phoneNumber: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   dateOfBirth: Date;
   @IsOptional()
   @IsString()

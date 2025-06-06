@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { User } from 'src/app/models/User';
 import { SidebarService } from 'src/app/services/sidebar.service';
 import { environment } from 'src/environments/environment';
@@ -6,7 +6,9 @@ import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-main-layout',
   templateUrl: './main-layout.component.html',
-  styleUrls: ['./main-layout.component.css']
+  styleUrls: ['./main-layout.component.css'],
+    encapsulation: ViewEncapsulation.Emulated,  // make sure it's not None
+
 })
 export class MainLayoutComponent implements OnInit {
   isSidebarVisible = false;

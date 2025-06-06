@@ -1,15 +1,7 @@
-import { IsString, IsOptional, IsNumber, IsDecimal, IsEmail } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsEmail } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateProfileDto {
-  @IsString()
-  name: string;
-
-  @IsEmail()
-  email: string;
-
-  @IsString()
-  phone: string;
-
   @IsString()
   companyName: string;
 
@@ -17,6 +9,7 @@ export class CreateProfileDto {
   formeJuridique: string;
 
   @IsNumber()
+  @Type(() => Number)
   capitalSocial: number;
 
   @IsString()
@@ -31,23 +24,23 @@ export class CreateProfileDto {
   @IsString()
   adresse: string;
 
-  @IsOptional()
-  @IsString()
-  logo?: string;
-
   @IsString()
   nomAssurance: string;
 
   @IsNumber()
+  @Type(() => Number)
   montantMobilier: number;
 
   @IsNumber()
+  @Type(() => Number)
   montantMaxParObjet: number;
 
   @IsNumber()
+  @Type(() => Number)
   franchise: number;
 
   @IsNumber()
+  @Type(() => Number)
   pourcentageAcompte: number;
 
   @IsString()
@@ -55,8 +48,4 @@ export class CreateProfileDto {
 
   @IsString()
   iban: string;
-
-  @IsOptional()
-  @IsString()
-  pdfCgv?: string;
 }

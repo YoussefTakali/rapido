@@ -19,7 +19,7 @@
                 [class.is-invalid]="clientForm.get('profileId')?.invalid && clientForm.get('profileId')?.touched">
           <option value="">Choose a profile</option>
           <option *ngFor="let profile of profiles" [value]="profile.id">
-            {{ profile.name }}
+            {{ profile.companyName }}
           </option>
         </select>
         <div *ngIf="clientForm.get('profileId')?.invalid && clientForm.get('profileId')?.touched" 

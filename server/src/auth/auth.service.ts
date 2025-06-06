@@ -46,8 +46,6 @@ export class AuthService {
           name: dto.name.trim(),
           email: dto.email.toLowerCase().trim(),
           password: hashedPassword,
-          phoneNumber: dto.phoneNumber?.trim(),
-          dateOfBirth: new Date(dto.dateOfBirth),
           role: Role.EMPLOYEE,
         },
         select: {
@@ -95,12 +93,17 @@ export class AuthService {
         await this.addSecurityDelay();
         throw new UnauthorizedException('Invalid credentials');
       }
-
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isOnline: true,
+        lastSeen: new Date(), // Optional here on login, mainly useful on logout/disconnect
+      },
+    });
       const tokens = await this.generateTokens(user);
       
       this.logger.log(`User logged in successfully: ${user.email}`);
-      this.logger.log(`User logged in successfully: ${user.profilePicture}`);
-
+      // Return access and refresh tokens along with user info      
       return {
         access_token: tokens.accessToken,
         refresh_token: tokens.refreshToken,
@@ -241,4 +244,22 @@ async refreshToken(refreshTokenDto: RefreshTokenDto) {
     const delay = Math.floor(Math.random() * 100) + 50;
     await new Promise(resolve => setTimeout(resolve, delay));
   }
+  async logout(userId: number): Promise<{ message: string }> {
+  try {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        isOnline: false,
+        lastSeen: new Date(),
+      },
+    });
+
+    this.logger.log(`User logged out successfully: ID ${userId}`);
+    return { message: 'Logout successful' };
+  } catch (error) {
+    this.logger.error(`Logout failed for user ID ${userId}:`, error);
+    throw new InternalServerErrorException('Logout failed');
+  }
+}
+
 }

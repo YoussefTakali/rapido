@@ -20,20 +20,37 @@ export class ClientsComponent implements OnInit {
   constructor(private clientService: ClientService) {}
 
   ngOnInit(): void {
-    const user = JSON.parse(localStorage.getItem('user')!);
-    if (user?.id) {
-      this.clientService.getClientsByUser(user.id).subscribe({
-        next: (data) => {
-          this.clients = data;
-          this.filteredClients = data;
-          this.updatePagination();
-          console.log('Clients loaded:', this.clients);
-        },
-        error: (error) => {
-          console.error('Erreur récupération clients', error);
-        }
-      });
+   const user = JSON.parse(localStorage.getItem('user')!);
+const role = user?.role;
+
+if (role === 'EMPLOYEE' && user?.id) {
+  this.clientService.getClientsByUser(user.id).subscribe({
+    next: (data) => {
+      this.clients = data;
+      this.filteredClients = data;
+      this.updatePagination();
+      console.log('Clients loaded for EMPLOYEE:', this.clients);
+    },
+    error: (error) => {
+      console.error('Erreur récupération clients (EMPLOYEE):', error);
     }
+  });
+} else if (role === 'ADMIN') {
+  this.clientService.getClients().subscribe({
+    next: (data) => {
+      this.clients = data;
+      this.filteredClients = data;
+      this.updatePagination();
+      console.log('Clients loaded for ADMIN:', this.clients);
+    },
+    error: (error) => {
+      console.error('Erreur récupération clients (ADMIN):', error);
+    }
+  });
+} else {
+  console.warn('Rôle inconnu ou utilisateur non connecté');
+}
+
   }
 
   onSearchChange(): void {

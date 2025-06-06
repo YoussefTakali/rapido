@@ -67,8 +67,11 @@ export class AuthController {
   @Post('logout')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async logout(@Request() req: any) {
-    return { message: 'Successfully logged out' };
+  async logout(@Request() req): Promise<{ message: string }> {
+    // req.user should contain the decoded JWT payload with user ID
+    const userId = req.user.sub;
+    console.log(`Logging out user with ID: ${userId}`);
+    return this.authService.logout(userId);
   }
 
   @Get('verify-token')
@@ -83,4 +86,5 @@ export class AuthController {
       },
     };
   }
+  
 }

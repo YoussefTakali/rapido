@@ -66,9 +66,11 @@ background: linear-gradient(
   .time {
     font-weight: bold;
     font-size: 50px;
+    margin-bottom: 10%;
   }
   
   .date {
+
     font-size: 30px;
     color: white;
   }

@@ -27,6 +27,7 @@ table {
 
 thead {
   background-color: #f9fafb;
+
 }
 
 thead th {
@@ -34,11 +35,15 @@ thead th {
   text-align: left;
   padding: 12px 16px;
   border-bottom: 1px solid #e5e7eb;
+    position: relative;
+  left: 4%;
 }
 
 tbody td {
   padding: 12px 16px;
   border-bottom: 1px solid #e5e7eb;
+    position: relative;
+  left: 4%;
 }
 
 tbody tr:hover {
@@ -48,7 +53,7 @@ tbody tr:hover {
 
 /* Checkbox styling */
 td:first-child, th:first-child {
-  width: 40px;
+  width: 200px;
 }
 
 input[type="checkbox"] {

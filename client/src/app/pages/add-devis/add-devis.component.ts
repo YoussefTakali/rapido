@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ClientService } from 'src/app/services/client.service';
 import { ProfileService } from 'src/app/services/profile.service';
 import { DevisService } from 'src/app/services/devis.service';
 import { Client } from 'src/app/models/Client';
-import { Profile } from 'src/app/models/Profile';
-import { DevisFormData, EtatDevis, OptionType } from 'src/app/models/Devis';
+import { Profile } from 'src/app/models/ProfileScroll';
+import { DevisFormData, EtatDevis, OptionType } from 'src/app/models/DevisUpdate';
 import { User } from 'src/app/models/User';
 import { Router } from '@angular/router';
 
@@ -13,7 +13,9 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-add-devis',
   templateUrl: './add-devis.component.html',
-  styleUrls: ['./add-devis.component.css']
+  styleUrls: ['./add-devis.component.css'],
+    encapsulation: ViewEncapsulation.Emulated,  // make sure it's not None
+
 })
 export class AddDevisComponent implements OnInit {
   currentStep = 1;
@@ -100,19 +102,44 @@ export class AddDevisComponent implements OnInit {
     });
   }
 
-  loadClients() {
+loadClients() {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const role = user?.role;
+
+  if (role === 'EMPLOYEE') {
+    this.clientService.getClientsByUser(user.id).subscribe({
+      next: (clients) => this.clients = clients,
+      error: (error) => console.error('Error loading clients for EMPLOYEE:', error)
+    });
+  } else if (role === 'ADMIN') {
     this.clientService.getClients().subscribe({
       next: (clients) => this.clients = clients,
-      error: (error) => console.error('Error loading clients:', error)
+      error: (error) => console.error('Error loading clients for ADMIN:', error)
     });
+  } else {
+    console.warn('Unknown role or user not logged in');
   }
+}
 
-  loadProfilesByUser(id: number) {
+
+loadProfilesByUser(id: number) {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const role = user?.role;
+
+  if (role === 'EMPLOYEE') {
     this.profileService.getProfilesByUser(id).subscribe({
       next: (profiles) => this.profiles = profiles,
-      error: (error) => console.error('Error loading profiles:', error)
+      error: (error) => console.error('Error loading profiles for EMPLOYEE:', error)
     });
+  } else if (role === 'ADMIN') {
+    this.profileService.getProfiles().subscribe({
+      next: (profiles) => this.profiles = profiles,
+      error: (error) => console.error('Error loading profiles for ADMIN:', error)
+    });
+  } else {
+    console.warn('Unknown role or user not logged in');
   }
+}
 
   getProgressPercentage(): number {
     return (this.currentStep / this.totalSteps) * 100;
@@ -214,7 +241,7 @@ export class AddDevisComponent implements OnInit {
   }
    getSelectedProfileName() {
     const selectedProfile = this.profiles.find(profile => profile.id === this.formData.profileId);
-    return selectedProfile ? selectedProfile.name : '';
+    return selectedProfile ? selectedProfile.companyName : '';
   }
   async submitForm() {
     if (this.isLoading) return;

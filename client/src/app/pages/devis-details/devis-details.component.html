@@ -163,9 +163,9 @@
     <!-- Profil (Read-only) -->
     <div class="details-section">
       <h3>Profil / Entreprise</h3>
-      <p>Nom: {{ devis.profile?.name }}</p>
+      <p>Nom: {{ devis.profile?.companyName }}</p>
       <div *ngIf="devis.profile?.logo">
-        <img [src]="devis.profile?.logo" alt="Logo entreprise" style="max-width: 100px; max-height: 100px;" />
+        <img [src]="'http://localhost:3000/uploads/profilesPDF/'+devis.profile?.logo" alt="Logo entreprise" style="max-width: 100px; max-height: 100px;" />
       </div>
     </div>
   </div>

@@ -43,7 +43,7 @@ export class UserController {
   )
   create(
     @UploadedFile() file: Express.Multer.File,
-    @Body() createUserDto: CreateUserDto,
+    @Body() createUserDto: CreateUserDto, 
   ) {
     const profilePicture = file?.filename;
     return this.userService.create({ ...createUserDto, profilePicture });
