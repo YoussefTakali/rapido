@@ -32,9 +32,6 @@ const routes: Routes = [
       { path: 'profiles/:id', component: ProfileDetailsComponent },
       { path: 'myprofile', component: ProfileViewComponent },
       { path: 'activities', component: ActivitiesComponent }
-
-
-
     ]
   },
     { path: 'login', component: LoginComponent },

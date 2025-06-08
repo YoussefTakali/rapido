@@ -8,6 +8,11 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService, private http: HttpClient) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    // Skip authentication for HERE Maps API calls
+    if (this.isHereMapsApiCall(req.url)) {
+      return next.handle(req);
+    }
+
     const accessToken = this.authService.getAccessToken();
     let authReq = req;
 
@@ -28,6 +33,16 @@ export class AuthInterceptor implements HttpInterceptor {
     );
   }
 
+  private isHereMapsApiCall(url: string): boolean {
+    return url.includes('hereapi.com') || 
+           url.includes('here.com') ||
+           url.includes('router.hereapi.com') ||
+           url.includes('geocode.search.hereapi.com') ||
+           url.includes('places.ls.hereapi.com') ||
+           url.includes('discover.search.hereapi.com') ||
+           url.includes('browse.search.hereapi.com');
+  }
+
   private handleRefreshToken(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const refreshToken = this.authService.getRefreshToken();
     if (!refreshToken) {
@@ -35,7 +50,10 @@ export class AuthInterceptor implements HttpInterceptor {
       return throwError(() => new Error('No refresh token'));
     }
 
-    return this.http.post<{ access_token: string; refresh_token?: string }>('/auth/refresh-token', {
+    // Fix the endpoint URL - it should probably be your backend URL + refresh endpoint
+    const refreshUrl = 'http://localhost:8080/auth/refresh-token'; // Update this to your actual backend URL
+    
+    return this.http.post<{ access_token: string; refresh_token?: string }>(refreshUrl, {
       refreshToken,
     }).pipe(
       switchMap((tokens) => {
@@ -50,6 +68,7 @@ export class AuthInterceptor implements HttpInterceptor {
       }),
       catchError((err) => {
         // Refresh failed: logout user
+        console.error('Token refresh failed:', err);
         this.authService.removeTokens();
         // redirect to login or show message
         return throwError(() => err);

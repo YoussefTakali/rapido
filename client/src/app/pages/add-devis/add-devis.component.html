@@ -154,24 +154,41 @@
   </div>
 
   <!-- Step 2: Departure Details -->
-  <div *ngIf="currentStep === 2" class="form-step">
-    <h2>Departure Details</h2>
-    <form [formGroup]="departForm">
-      
-      <div class="form-group">
-        <label for="adresseDepart">Departure Address *</label>
+<div *ngIf="currentStep === 2" class="form-step">
+  <h2>Departure Details</h2>
+  <form [formGroup]="departForm">
+    
+    <div class="form-group address-autocomplete">
+      <label for="adresseDepart">Departure Address *</label>
+      <div class="address-input-container">
         <input 
           type="text" 
           id="adresseDepart" 
           formControlName="adresseDepart" 
           class="form-control"
           [class.is-invalid]="departForm.get('adresseDepart')?.invalid && departForm.get('adresseDepart')?.touched"
-          placeholder="Enter departure address">
-        <div *ngIf="departForm.get('adresseDepart')?.invalid && departForm.get('adresseDepart')?.touched" 
-             class="invalid-feedback">
-          <span *ngIf="departForm.get('adresseDepart')?.errors?.['required']">Address is required</span>
+          placeholder="Enter departure address"
+          (input)="onDepartureAddressInput($event)"
+          (blur)="hideDepartureSuggestions()"
+          (focus)="onDepartureAddressInput($event)"
+          autocomplete="off">
+        
+        <div *ngIf="showDepartureSuggestions" class="address-suggestions">
+          <div 
+            *ngFor="let suggestion of departureAddressSuggestions" 
+            class="suggestion-item"
+            (click)="selectDepartureAddress(suggestion)">
+            <div class="suggestion-title">{{ suggestion.title }}</div>
+            <div class="suggestion-address">{{ suggestion.address?.label }}</div>
+          </div>
         </div>
       </div>
+      
+      <div *ngIf="departForm.get('adresseDepart')?.invalid && departForm.get('adresseDepart')?.touched" 
+           class="invalid-feedback">
+        <span *ngIf="departForm.get('adresseDepart')?.errors?.['required']">Address is required</span>
+      </div>
+    </div>
 
       <div class="form-row">
         <div class="form-group">
@@ -180,8 +197,11 @@
                   [class.is-invalid]="departForm.get('typeLogementDepart')?.invalid && departForm.get('typeLogementDepart')?.touched">
             <option value="">Select type</option>
             <option value="APPARTEMENT">Apartment</option>
-            <option value="MAISON">House</option>
-            <option value="BUREAU">Office</option>
+            <option value="MAISON">Maison</option>
+            <option value="STUDIO">Studio</option>
+            <option value="DUPLEX">Duplex</option>
+            <option value="BUREAU">Bureau</option>
+            <option value="GARDE_MEUBLE">Garde Meuble</option>
           </select>
           <div *ngIf="departForm.get('typeLogementDepart')?.invalid && departForm.get('typeLogementDepart')?.touched" 
                class="invalid-feedback">
@@ -213,10 +233,12 @@
           <select id="ascenseurDepart" formControlName="ascenseurDepart" class="form-control"
                   [class.is-invalid]="departForm.get('ascenseurDepart')?.invalid && departForm.get('ascenseurDepart')?.touched">
             <option value="">Select elevator type</option>
-            <option value="SANS_ASCENSEUR">No Elevator</option>
-            <option value="TYPE1">Type 1</option>
-            <option value="TYPE2">Type 2</option>
-            <option value="TYPE3">Type 3</option>
+              <option value="SANS_ASCENSEUR">Sans Ascenseur</option>
+              <option value="PERSONNES_1_2">De 1 a 2 personnes</option>
+              <option value="PERSONNES_3_4">De 3 a 4 personnes</option>
+              <option value="PERSONNES_5_6">De 5 a 6 personnes</option>
+              <option value="PERSONNES_7_8">De 7 a 8 personnes</option>
+              <option value="TOUT_RENTRE">Tout Rentre</option>
           </select>
           <div *ngIf="departForm.get('ascenseurDepart')?.invalid && departForm.get('ascenseurDepart')?.touched" 
                class="invalid-feedback">
@@ -228,11 +250,18 @@
           <label for="distancePortageDepart">Carrying Distance *</label>
           <select id="distancePortageDepart" formControlName="distancePortageDepart" class="form-control"
                   [class.is-invalid]="departForm.get('distancePortageDepart')?.invalid && departForm.get('distancePortageDepart')?.touched">
-            <option value="">Select distance</option>
-            <option value="TYPE1">0-10m</option>
-            <option value="TYPE2">10-20m</option>
-            <option value="TYPE3">20-50m</option>
-            <option value="TYPE4">50m+</option>
+                  <option value="">Select distance</option>
+                  <option value="M_0_10">0-10m</option>
+                  <option value="M_11_20">11-20m</option>
+                  <option value="M_21_30">21-30m</option>
+                  <option value="M_31_40">31-40m</option>
+                  <option value="M_41_50">41-50m</option>
+                  <option value="M_51_60">51-60m</option>
+                  <option value="M_61_70">61-70m</option>
+                  <option value="M_71_80">71-80m</option>
+                  <option value="M_81_90">81-90m</option>
+                  <option value="M_91_100">91-100m</option>
+                  <option value="MORE_100">100m+</option>
           </select>
           <div *ngIf="departForm.get('distancePortageDepart')?.invalid && departForm.get('distancePortageDepart')?.touched" 
                class="invalid-feedback">
@@ -267,25 +296,41 @@
   </div>
 
   <!-- Step 3: Delivery Details -->
-  <div *ngIf="currentStep === 3" class="form-step">
-    <h2>Delivery Details</h2>
-    <form [formGroup]="livraisonForm">
-      
-      <div class="form-group">
-        <label for="adresseLivraison">Delivery Address *</label>
+<div *ngIf="currentStep === 3" class="form-step">
+  <h2>Delivery Details</h2>
+  <form [formGroup]="livraisonForm">
+    
+    <div class="form-group address-autocomplete">
+      <label for="adresseLivraison">Delivery Address *</label>
+      <div class="address-input-container">
         <input 
           type="text" 
           id="adresseLivraison" 
           formControlName="adresseLivraison" 
           class="form-control"
           [class.is-invalid]="livraisonForm.get('adresseLivraison')?.invalid && livraisonForm.get('adresseLivraison')?.touched"
-          placeholder="Enter delivery address">
-        <div *ngIf="livraisonForm.get('adresseLivraison')?.invalid && livraisonForm.get('adresseLivraison')?.touched" 
-             class="invalid-feedback">
-          <span *ngIf="livraisonForm.get('adresseLivraison')?.errors?.['required']">Address is required</span>
+          placeholder="Enter delivery address"
+          (input)="onDeliveryAddressInput($event)"
+          (blur)="hideDeliverySuggestions()"
+          (focus)="onDeliveryAddressInput($event)"
+          autocomplete="off">
+        
+        <div *ngIf="showDeliverySuggestions" class="address-suggestions">
+          <div 
+            *ngFor="let suggestion of deliveryAddressSuggestions" 
+            class="suggestion-item"
+            (click)="selectDeliveryAddress(suggestion)">
+            <div class="suggestion-title">{{ suggestion.title }}</div>
+            <div class="suggestion-address">{{ suggestion.address?.label }}</div>
+          </div>
         </div>
       </div>
-
+      
+      <div *ngIf="livraisonForm.get('adresseLivraison')?.invalid && livraisonForm.get('adresseLivraison')?.touched" 
+           class="invalid-feedback">
+        <span *ngIf="livraisonForm.get('adresseLivraison')?.errors?.['required']">Address is required</span>
+      </div>
+    </div>
       <div class="form-row">
         <div class="form-group">
           <label for="typeLogementLivraison">Housing Type *</label>
@@ -293,8 +338,11 @@
                   [class.is-invalid]="livraisonForm.get('typeLogementLivraison')?.invalid && livraisonForm.get('typeLogementLivraison')?.touched">
             <option value="">Select type</option>
             <option value="APPARTEMENT">Apartment</option>
-            <option value="MAISON">House</option>
-            <option value="BUREAU">Office</option>
+            <option value="MAISON">Maison</option>
+            <option value="STUDIO">Studio</option>
+            <option value="DUPLEX">Duplex</option>
+            <option value="BUREAU">Bureau</option>
+            <option value="GARDE_MEUBLE">Garde Meuble</option>
           </select>
           <div *ngIf="livraisonForm.get('typeLogementLivraison')?.invalid && livraisonForm.get('typeLogementLivraison')?.touched" 
                class="invalid-feedback">
@@ -326,10 +374,12 @@
           <select id="ascenseurLivraison" formControlName="ascenseurLivraison" class="form-control"
                   [class.is-invalid]="livraisonForm.get('ascenseurLivraison')?.invalid && livraisonForm.get('ascenseurLivraison')?.touched">
             <option value="">Select elevator type</option>
-            <option value="SANS_ASCENSEUR">No Elevator</option>
-            <option value="TYPE1">Type 1</option>
-            <option value="TYPE2">Type 2</option>
-            <option value="TYPE3">Type 3</option>
+              <option value="SANS_ASCENSEUR">Sans Ascenseur</option>
+              <option value="PERSONNES_1_2">De 1 a 2 personnes</option>
+              <option value="PERSONNES_3_4">De 3 a 4 personnes</option>
+              <option value="PERSONNES_5_6">De 5 a 6 personnes</option>
+              <option value="PERSONNES_7_8">De 7 a 8 personnes</option>
+              <option value="TOUT_RENTRE">Tout Rentre</option>
           </select>
           <div *ngIf="livraisonForm.get('ascenseurLivraison')?.invalid && livraisonForm.get('ascenseurLivraison')?.touched" 
                class="invalid-feedback">
@@ -341,11 +391,18 @@
           <label for="distancePortageLivraison">Carrying Distance *</label>
           <select id="distancePortageLivraison" formControlName="distancePortageLivraison" class="form-control"
                   [class.is-invalid]="livraisonForm.get('distancePortageLivraison')?.invalid && livraisonForm.get('distancePortageLivraison')?.touched">
-            <option value="">Select distance</option>
-            <option value="TYPE1">0-10m</option>
-            <option value="TYPE2">10-20m</option>
-            <option value="TYPE3">20-50m</option>
-            <option value="TYPE4">50m+</option>
+                  <option value="">Select distance</option>
+                  <option value="M_0_10">0-10m</option>
+                  <option value="M_11_20">11-20m</option>
+                  <option value="M_21_30">21-30m</option>
+                  <option value="M_31_40">31-40m</option>
+                  <option value="M_41_50">41-50m</option>
+                  <option value="M_51_60">51-60m</option>
+                  <option value="M_61_70">61-70m</option>
+                  <option value="M_71_80">71-80m</option>
+                  <option value="M_81_90">81-90m</option>
+                  <option value="M_91_100">91-100m</option>
+                  <option value="MORE_100">100m+</option>
           </select>
           <div *ngIf="livraisonForm.get('distancePortageLivraison')?.invalid && livraisonForm.get('distancePortageLivraison')?.touched" 
                class="invalid-feedback">

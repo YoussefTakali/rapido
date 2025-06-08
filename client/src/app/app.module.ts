@@ -30,6 +30,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ProfileDetailsComponent } from './pages/profile-details/profile-details.component';
 import { ProfileViewComponent } from './pages/profile-view/profile-view.component';
 import { ActivitiesComponent } from './pages/activities/activities.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import { ActivitiesComponent } from './pages/activities/activities.component';
     ProfileViewComponent,
     ActivitiesComponent],
   imports: [
+    MatSnackBarModule,
     ReactiveFormsModule,
     NgxSliderModule,
     BrowserModule,

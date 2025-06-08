@@ -1,1 +1,85 @@
-<p>activities works!</p>
+<h3 class="title">Notifications</h3>
+
+<div *ngIf="loading">Loading notifications...</div>
+
+<ul *ngIf="!loading && notifications.length > 0">
+  <li
+    *ngFor="let notification of notifications"
+    [class.unread]="!notification.isRead"
+    (click)="markNotificationRead(notification)"
+  >
+    <div class="notification-content">
+      <p class="notification-message">{{ notification.message }}</p>
+      <small class="notification-time">{{ notification.createdAt | date:'short' }}</small>
+      
+      <div *ngIf="notification.type === NotificationType.UserRegister" class="notification-actions">
+        <button (click)="openDeleteConfirmModal(notification)" class="btn-delete">Supprimer</button>
+        <button class="btn-assign" (click)="openProfileModal(notification); $event.stopPropagation()">
+          Assign Profile
+        </button>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<div *ngIf="!loading && notifications.length === 0" class="empty-state">
+  No notifications yet.
+</div>
+
+<!-- Profile Selection Modal -->
+<div class="modal-backdrop" *ngIf="showProfileModal" (click)="closeProfileModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Assign Profile to User</h3>
+      <button class="close-btn" (click)="closeProfileModal()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="search-container">
+        <input type="text" placeholder="Search profiles..." [(ngModel)]="profileSearch" (input)="filterProfiles()">
+      </div>
+      
+      <div class="profiles-container">
+        <div *ngFor="let profile of filteredProfiles" 
+             class="profile-card"
+             [class.selected]="isProfileSelected(profile)"
+             (click)="selectProfile(profile)">
+          <input type="checkbox" 
+                 [checked]="isProfileSelected(profile)"
+                 (click)="$event.stopPropagation(); selectProfile(profile)">
+          <div class="profile-avatar">
+            {{ profile.companyName ? profile.companyName.charAt(0).toUpperCase() : '?' }}
+          </div>
+          <div class="profile-details">
+            <h4>{{ profile.companyName }}</h4>
+            <p>{{ profile.companyName }}</p>
+          </div>
+        </div>
+        
+        <div *ngIf="filteredProfiles.length === 0" class="no-results">
+          No matching profiles found
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeProfileModal()">Cancel</button>
+      <button class="btn-confirm" 
+              [disabled]="!selectedProfiles || selectedProfiles.length === 0" 
+              (click)="confirmAssignment()">
+        Assign Profile
+      </button>
+    </div>
+  </div>
+</div>
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" *ngIf="showDeleteConfirmModal">
+  <div class="modal-box">
+    <h3>Confirmer la suppression</h3>
+    <p>Êtes-vous sûr de vouloir supprimer cet utilisateur ?</p>
+    <div class="modal-actions">
+      <button (click)="confirmDelete()" class="confirm-btn">Oui, supprimer</button>
+      <button (click)="cancelDelete()" class="cancel-btn">Annuler</button>
+    </div>
+  </div>
+</div>

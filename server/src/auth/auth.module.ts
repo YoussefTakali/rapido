@@ -6,9 +6,11 @@ import { AuthController } from './auth.controller';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports: [
+    NotificationModule,
     ConfigModule,
     PassportModule.register({ defaultStrategy: 'jwt' }), // <-- ✅ add this
     JwtModule.registerAsync({

@@ -25,7 +25,7 @@ export class DevisDetailsComponent implements OnInit {
   typeLogementOptions = Object.values(TypeLogement);
   ascenseurOptions = Object.values(AscenseurType);
   distancePortageOptions = Object.values(DistancePortageType);
-
+  distance= 0; // Default distance, can be updated later
   profiles: Profile[] = [];
   isEditing = false;
 
@@ -173,10 +173,6 @@ export class DevisDetailsComponent implements OnInit {
       this.devis.dateLivraison = new Date(this.devisDateLivraisonString).toISOString();
     }
 
-    // Update profile reference is no longer needed since profile is read-only
-    // this.devis.profile = this.profiles.find(p => p.id === this.devis!.profileId);
-
-    // Make API call to save
 const cleanDevis : DevisFormUpdate = {
   volume: this.devis.volume,
   adresseDepart: this.devis.adresseDepart,
@@ -196,6 +192,7 @@ const cleanDevis : DevisFormUpdate = {
   prixDevis: Number(this.devis.prixDevis),  // convert string to number if needed
   options: this.devis.options,
   etat: this.devis.etat,
+distance: this.distance ?? 0
 };
 
 // Send cleanDevis to backend instead of full devis

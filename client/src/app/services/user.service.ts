@@ -20,4 +20,23 @@ export class UserService {
   deleteUser(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+  assignProfiles(assignProfilesDto: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/assign`, assignProfilesDto);
+  }
+getCurrentUserId(): number | null {
+  const userStr = localStorage.getItem('user');
+  if (!userStr) return null;
+
+  try {
+    const user = JSON.parse(userStr);
+    if (user && typeof user.id === 'number') {
+      return user.id;
+    }
+    return null;
+  } catch (e) {
+    console.error('Error parsing user from localStorage', e);
+    return null;
+  }
+}
+
 }

@@ -12,12 +12,13 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
 import { JwtService } from '@nestjs/jwt';
-import { Role } from 'generated/prisma';
+import { NotificationType, Role } from 'generated/prisma';
 import * as bcrypt from 'bcrypt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { RegisterResponseDto } from './dto/register-response.dto';
 import { RefreshTokenDto, RefreshTokenResponseDto } from './dto/refresh-token.dto';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class AuthService {
@@ -28,61 +29,80 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private notificationService: NotificationService,
+
   ) {
     this.saltRounds = this.configService.get<number>('BCRYPT_SALT_ROUNDS', 12);
   }
 
-  async register(dto: RegisterDto): Promise<RegisterResponseDto> {
-    try {
-      // Check if user already exists
-      await this.checkUserExists(dto.email);
+async register(dto: RegisterDto): Promise<RegisterResponseDto> {
+  try {
+    // Check if user already exists
+    await this.checkUserExists(dto.email);
 
-      // Hash password with configurable salt rounds
-      const hashedPassword = await this.hashPassword(dto.password);
-      console.log(`Hashed password for ${dto.email}: ${hashedPassword}`);
-      // Create user
-      const user = await this.prisma.user.create({
-        data: {
-          name: dto.name.trim(),
-          email: dto.email.toLowerCase().trim(),
-          password: hashedPassword,
-          role: Role.EMPLOYEE,
-        },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          createdAt: true,
-        },
-      });
+    // Hash password with configurable salt rounds
+    const hashedPassword = await this.hashPassword(dto.password);
+    console.log(`Hashed password for ${dto.email}: ${hashedPassword}`);
 
-      this.logger.log(`User registered successfully: ${user.email}`);
+    // Create user
+    const user = await this.prisma.user.create({
+      data: {
+        name: dto.name.trim(),
+        email: dto.email.toLowerCase().trim(),
+        password: hashedPassword,
+        role: Role.EMPLOYEE,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+    console.log(`User created: ${JSON.stringify(user)}`);
+    this.logger.log(`User registered successfully: ${user.email}`);
 
-      return {
-        message: 'User registered successfully',
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        },
-      };
-    } catch (error) {
-      if (error instanceof ConflictException) {
-        throw error;
-      }
-
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          throw new ConflictException('Email already exists');
-        }
-      }
-
-      this.logger.error(`Registration failed for ${dto.email}:`, error);
-      throw new InternalServerErrorException('Registration failed');
+    // Find all admins
+    const adminUsers = await this.prisma.user.findMany({
+      where: { role: Role.ADMIN },
+      select: { id: true },
+    });
+    // Send notification to each admin
+    for (const admin of adminUsers) {
+      await this.notificationService.createNotification(
+        admin.id,
+        `New user registered: ${user.email}`,
+        NotificationType.UserRegister,
+        user.id
+      );
     }
+
+    return {
+      message: 'User registered successfully',
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    };
+  } catch (error) {
+    if (error instanceof ConflictException) {
+      throw error;
+    }
+
+    if (error instanceof PrismaClientKnownRequestError) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('Email already exists');
+      }
+    }
+
+    this.logger.error(`Registration failed for ${dto.email}:`, error);
+    throw new InternalServerErrorException('Registration failed');
   }
+}
+
 
   async login(loginDto: LoginDto): Promise<AuthResponseDto> {
     try {

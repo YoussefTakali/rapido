@@ -23,6 +23,9 @@ model User {
   userProfiles   UserProfile[]
   devises        Devis[]          @relation("UserDevis")
   calendarEvents CalendarEvent[]
+  receivedNotifications Notification[] @relation("NotificationReceiver")
+  createdNotifications  Notification[] @relation("NotificationCreator")// <-- Add this line for back relation
+
 }
 
 model Client {
@@ -55,6 +58,29 @@ model Profile {
   userProfiles  UserProfile[]
   devises       Devis[]       @relation("ProfileDevis")
 }
+enum NotificationType {
+  UserRegister
+  MAILSENT
+  EVENTREMINDER
+}
+
+model Notification {
+  id         Int              @id @default(autoincrement())
+
+  // Receiver of the notification (optional)
+  userId     Int?
+  user       User?            @relation("NotificationReceiver", fields: [userId], references: [id])
+
+  // Creator of the notification (optional)
+  addedId    Int?
+  addedBy    User?            @relation("NotificationCreator", fields: [addedId], references: [id])
+
+  message    String
+  type       NotificationType
+  isRead     Boolean          @default(false)
+  createdAt  DateTime         @default(now())
+}
+
 
 model UserProfile {
   userId     Int
@@ -89,7 +115,7 @@ model Devis {
   prixDevis              Decimal @default(0.0)
   options                 OptionType[] // Enum list
   etat                    EtatDevis
-
+  distance                 Float? @default(0.0) // Optional distance field
   userId     Int
   user       User     @relation("UserDevis", fields: [userId], references: [id])
 
@@ -148,13 +174,14 @@ enum EtatDevis {
 }
 
 enum OptionType {
-  DEMONTAGE 
-  REMONTAGE
-  EMBALLAGE
-  DEBALLAGE
-  TRANSPORT
-  GARDE_MEUBLE
-  MANUTENTION
+  PACK_CARTONS
+  REPORT_DE_DATE
+  FLEXIBILITE_SUR_DATE
+  DEBALLAGE_ET_REMONTAGE
+  EMBALLAGE_FRAGILE
+  EMBALLAGE_CARTONS
+  AUTORISATION_STATIONNEMENT
+  TRANSPORT_DES_VETEMENTS
 }
 
 enum TypeLogement {
@@ -168,25 +195,25 @@ enum TypeLogement {
 
 enum AscenseurType {
   SANS_ASCENSEUR
-  TYPE1
-  TYPE2
-  TYPE3
-  TYPE4
-  TYPE5
+  PERSONNES_1_2
+  PERSONNES_3_4
+  PERSONNES_5_6
+  PERSONNES_7_8
+  TOUT_RENTRE
 }
 
 enum DistancePortageType {
-  TYPE1
-  TYPE2
-  TYPE3
-  TYPE4
-  TYPE5
-  TYPE6
-  TYPE7
-  TYPE8
-  TYPE9
-  TYPE10
-  TYPE11
+  M_0_10
+  M_11_20
+  M_21_30
+  M_31_40
+  M_41_50
+  M_51_60
+  M_61_70
+  M_71_80
+  M_81_90
+  M_91_100
+  MORE_100
 }
 
 enum Role {

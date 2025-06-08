@@ -22,6 +22,7 @@ profiles: any[] = [];
   itemsPerPageOptions = [5, 10, 25, 50];
   itemsPerPage = 10;
   currentPage = 1;
+  distance = 0; // 👈 Add this line
 
   filterMinPrice = 0;
   filterMaxPrice = 100000;
@@ -350,6 +351,8 @@ onEtatChange(devis: any, newEtat: EtatDevis) {
     monteMeubleLivraison: devis.monteMeubleLivraison,
     options: devis.options,
     etat: newEtat, // ici on met le nouvel état
+      distance: this.distance || 0 // 👈 Add this line
+
   };
 
   this.devisService.updateDevis(devis.id, updatedDevis).subscribe({

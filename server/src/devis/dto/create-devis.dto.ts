@@ -4,9 +4,11 @@ import {
 import { Type } from 'class-transformer';
 import { Prisma } from '@prisma/client';
 import { AscenseurType, DistancePortageType, EtatDevis, OptionType, TypeLogement } from 'generated/prisma';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateDevisDto {
-
+  @ApiProperty({ required: false })
+  distance?: number;
   @IsNumber()
   userId: number;
 

@@ -46,14 +46,20 @@
 
 /* GREEN DOT */
 .n-active {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background-color: green;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
+  position: absolute;
   top: 0;
   right: 0;
-  transform: translate(4px, -4px);
+}
+
+.n-active.green {
+  background-color: #27ae60;
+}
+
+.n-active.red {
+  background-color: #e74c3c;
 }
 
 /* PROFILE PICTURE */
@@ -161,66 +167,119 @@
 }
 
 /* NOTIFICATIONS SCROLL CONTAINER */
+/* ...existing code... */
+
+/* NOTIFICATIONS SCROLL CONTAINER */
 .notifications {
   width: 350px;
   height: 500px;
   overflow-y: auto;
   background: #f9f9f9;
   border: 1px solid #ddd;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
   padding: 1rem;
   scrollbar-width: thin;
-  scrollbar-color: #aaa transparent;
+  scrollbar-color: #aaa #f9f9f9;
+  transition: box-shadow 0.2s;
+}
+
+.notifications:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
 }
 
 .notifications::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+  background: #f9f9f9;
+  transition: background 0.2s;
+}
+
+.notifications:hover::-webkit-scrollbar-thumb {
+  background: #888;
 }
 
 .notifications::-webkit-scrollbar-thumb {
   background: #aaa;
-  border-radius: 6px;
+  border-radius: 8px;
+  transition: background 0.2s;
 }
 
 /* NOTIFICATION ITEM */
 .notification {
-  padding: 0.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0.5rem;
   border-bottom: 1px solid #eee;
   font-family: "Poppins", sans-serif;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s, box-shadow 0.15s;
 }
 
 .notification:last-child {
   border-bottom: none;
 }
 
+.notification:hover {
+  background: #e6f0fa;
+  box-shadow: 0 2px 8px rgba(66, 153, 225, 0.08);
+}
+
+.notification:active {
+  background: #d0e6f7;
+}
+
 .notif-sender {
-  height: 55px;
-  width: 55px;
+  height: 48px;
+  width: 48px;
   border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e7ef;
+  margin-top: 2px;
 }
 
 .notif-content {
-  font-size: 0.9rem;
+  font-size: 1rem;
+  color: #222;
+  margin-bottom: 0.2rem;
 }
 
 .notif-unseen {
-  font-size: 0.85rem;
-  color: rgb(4, 4, 132);
+  font-size: 0.92rem;
+  color: #0a2a7a;
+  font-weight: 600;
+  background: #eaf1ff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
 }
 
 .notif-date, .notif-seen-date {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 500;
-  color: rgb(4, 4, 132);
+  color: #4a5a7a;
+  margin-top: 2px;
+  display: block;
 }
 
 .notif-seen-date {
-  font-weight: 100;
+  font-weight: 400;
+  color: #8a99b3;
 }
 
 .notif-header {
-  font-size: 1.2rem;
-  font-weight: 500;
+  font-size: 1.18rem;
+  font-weight: 600;
   color: #041b2a;
+  margin-bottom: 0.15rem;
+  letter-spacing: 0.01em;
+}
+
+/* Optional: Add a subtle divider between notifications and header */
+.notifications .notif-header {
+  border-bottom: 1.5px solid #dbeafe;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.7rem;
 }

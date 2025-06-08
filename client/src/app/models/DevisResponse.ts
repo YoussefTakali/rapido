@@ -22,6 +22,7 @@ export interface Devis {
   prixDevis: number;  // Use number for Decimal
   options: OptionType[];
   etat: EtatDevis;
+  distance: number; // Optional, can be used for calculations
 
   userId: number;
   profileId: number;
@@ -44,13 +45,14 @@ export enum EtatDevis {
 }
 
 export enum OptionType {
-  DEMONTAGE = "DEMONTAGE",
-  REMONTAGE = "REMONTAGE",
-  EMBALLAGE = "EMBALLAGE",
-  DEBALLAGE = "DEBALLAGE",
-  TRANSPORT = "TRANSPORT",
-  GARDE_MEUBLE = "GARDE_MEUBLE",
-  MANUTENTION = "MANUTENTION"
+  PACK_CARTONS = 'PACK_CARTONS',
+  REPORT_DE_DATE = 'REPORT_DE_DATE',
+  FLEXIBILITE_SUR_DATE = 'FLEXIBILITE_SUR_DATE',
+  DEBALLAGE_ET_REMONTAGE = 'DEBALLAGE_ET_REMONTAGE',
+  EMBALLAGE_FRAGILE = 'EMBALLAGE_FRAGILE',
+  EMBALLAGE_CARTONS = 'EMBALLAGE_CARTONS',
+  AUTORISATION_STATIONNEMENT = 'AUTORISATION_STATIONNEMENT',
+  TRANSPORT_DES_VETEMENTS = 'TRANSPORT_DES_VETEMENTS',
 }
 
 export enum TypeLogement {
@@ -63,26 +65,26 @@ export enum TypeLogement {
 }
 
 export enum AscenseurType {
-  SANS_ASCENSEUR = "SANS_ASCENSEUR",
-  TYPE1 = "TYPE1",
-  TYPE2 = "TYPE2",
-  TYPE3 = "TYPE3",
-  TYPE4 = "TYPE4",
-  TYPE5 = "TYPE5"
+  SANS_ASCENSEUR = 'SANS_ASCENSEUR',
+  PERSONNES_1_2 = 'PERSONNES_1_2',
+  PERSONNES_3_4 = 'PERSONNES_3_4',
+  PERSONNES_5_6 = 'PERSONNES_5_6',
+  PERSONNES_7_8 = 'PERSONNES_7_8',
+  TOUT_RENTRE = 'TOUT_RENTRE'
 }
 
 export enum DistancePortageType {
-  TYPE1 = "TYPE1",
-  TYPE2 = "TYPE2",
-  TYPE3 = "TYPE3",
-  TYPE4 = "TYPE4",
-  TYPE5 = "TYPE5",
-  TYPE6 = "TYPE6",
-  TYPE7 = "TYPE7",
-  TYPE8 = "TYPE8",
-  TYPE9 = "TYPE9",
-  TYPE10 = "TYPE10",
-  TYPE11 = "TYPE11"
+  M_0_10 = 'M_0_10',
+  M_11_20 = 'M_11_20',
+  M_21_30 = 'M_21_30',
+  M_31_40 = 'M_31_40',
+  M_41_50 = 'M_41_50',
+  M_51_60 = 'M_51_60',
+  M_61_70 = 'M_61_70',
+  M_71_80 = 'M_71_80',
+  M_81_90 = 'M_81_90',
+  M_91_100 = 'M_91_100',
+  MORE_100 = 'MORE_100'
 }
 
 // Example related interfaces (simplified, add full fields as needed)
