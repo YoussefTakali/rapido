@@ -10,11 +10,12 @@ import { ClientModule } from './client/client.module';
 import { DevisModule } from './devis/devis.module';
 import { CalendarEventModule } from './calendar-event/calendar-event.module';
 import { NotificationModule } from './notification/notification.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [ PrismaModule, AuthModule, ConfigModule.forRoot({
       isGlobal: true, 
-    }), UserModule, ProfileModule, ClientModule, DevisModule, CalendarEventModule,NotificationModule],
+    }), UserModule, ProfileModule, ClientModule, DevisModule, CalendarEventModule,NotificationModule, MailModule],
   controllers: [AppController],
   providers: [AppService],
 }) 

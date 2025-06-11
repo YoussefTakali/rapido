@@ -32,14 +32,17 @@ model Client {
   id        Int     @id @default(autoincrement())
   nom       String
   prenom    String
-  email     String  @unique
+  email     String  
   telephone String
   devis     Devis[]
+  createdAt DateTime @default(now())
 }
 
 model Profile {
   id                    Int           @id @default(autoincrement())
-  companyName           String
+  companyName           String   
+  companyEmail          String  @unique
+  companyPhone          String 
   formeJuridique        String
   capitalSocial         Decimal
   siret                 String

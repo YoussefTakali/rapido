@@ -50,7 +50,7 @@
     <div *ngFor="let user of filteredUsers" class="user-card" (click)="onUserClick(user)">
       <div class="user-avatar-container">
         <img 
-          [src]="'http://localhost:3000/uploads/profile-pictures/' + user.profilePicture" 
+          [src]="apiBaseUrl+'/uploads/profile-pictures/' + user.profilePicture" 
           [alt]="user.name"
           class="user-image"
           (error)="onImageError($event)"

@@ -1,0 +1,11 @@
+<div class="stats-grid">
+  <div *ngFor="let stat of stats" class="stat-card">
+    <div class="stat-header">
+      <h3 class="stat-title">{{ stat.title }}</h3>
+<i [class]="stat.icon" style="color: #667eea;"></i>    </div>
+    <div class="stat-content">
+      <div class="stat-value">{{ stat.value }}</div>
+      <p class="stat-change">{{ stat.change }}</p>
+    </div>
+  </div>
+</div>

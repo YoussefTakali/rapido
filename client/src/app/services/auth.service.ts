@@ -67,7 +67,7 @@ logout(): Observable<any> {
   }
 
   return this.http.post(
-    'http://localhost:3000/auth/logout',
+    `${environment.apiBaseUrl}/auth/logout`,
     {},
     {
       headers: {

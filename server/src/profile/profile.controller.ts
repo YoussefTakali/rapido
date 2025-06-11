@@ -65,6 +65,7 @@ async create(
 ) {
   const pdfCgvFile = files.pdfCgv?.[0];
   const logoFile = files.logo?.[0];
+  console.log(body)
   return this.profileService.create(body, pdfCgvFile, logoFile);
 }
 

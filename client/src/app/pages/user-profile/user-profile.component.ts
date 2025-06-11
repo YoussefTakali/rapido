@@ -2,6 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserProfile } from 'src/app/models/User';
 import { UserService } from 'src/app/services/user.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-user-profile',
@@ -11,6 +12,7 @@ import { UserService } from 'src/app/services/user.service';
 
 })
 export class UserProfileComponent implements OnInit {
+  apiBaseUrl = environment.apiBaseUrl
   userId!: string;
   user!:UserProfile;
   isLoading = true

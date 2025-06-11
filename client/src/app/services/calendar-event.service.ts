@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CalendarEvent } from '../models/Calendar';
-import { S } from '@fullcalendar/core/internal-common';
 import { environment } from 'src/environments/environment';
 export interface ApiCalendarEvent {
   id: number;

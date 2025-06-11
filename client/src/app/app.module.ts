@@ -31,6 +31,18 @@ import { ProfileDetailsComponent } from './pages/profile-details/profile-details
 import { ProfileViewComponent } from './pages/profile-view/profile-view.component';
 import { ActivitiesComponent } from './pages/activities/activities.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { VolumeCalculatorComponent } from './pages/volume-calculator/volume-calculator.component';
+import { DevisMailComponent } from './components/devis-mail/devis-mail.component';
+import { ReplacePipe } from './pipes/replace-pipe';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { DashboardHeaderComponent } from './components/dashboard-header/dashboard-header.component';
+import { DashboardShellComponent } from './components/dashboard-shell/dashboard-shell.component';
+import { DashboardStatsComponent } from './components/dashboard-stats/dashboard-stats.component';
+import { RecentQuotesComponent } from './components/recent-quotes/recent-quotes.component';
+import { UpcomingEventsComponent } from './components/upcoming-events/upcoming-events.component';
+import { ClientsOverviewComponent } from './components/clients-overview/clients-overview.component';
+import { QuoteStatusChartComponent } from './components/quote-status-chart/quote-status-chart.component';
+import { NotificationPanelComponent } from './components/notification-panel/notification-panel.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +63,19 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     ProfileFormComponent,
     ProfileDetailsComponent,
     ProfileViewComponent,
-    ActivitiesComponent],
+    ActivitiesComponent,
+    VolumeCalculatorComponent,
+    ReplacePipe,
+    DevisMailComponent,
+    DashboardComponent,
+    DashboardHeaderComponent,
+    DashboardShellComponent,
+    DashboardStatsComponent,
+    RecentQuotesComponent,
+    UpcomingEventsComponent,
+    ClientsOverviewComponent,
+    QuoteStatusChartComponent,
+    NotificationPanelComponent],
   imports: [
     MatSnackBarModule,
     ReactiveFormsModule,

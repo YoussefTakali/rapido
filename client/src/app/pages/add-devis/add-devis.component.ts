@@ -154,21 +154,41 @@ export class AddDevisComponent implements OnInit {
     return (this.currentStep / this.totalSteps) * 100;
   }
 
-  toggleNewClient() {
-    this.isAddingNewClient = !this.isAddingNewClient;
-    const fields = ['nom', 'prenom', 'email', 'telephone'];
+toggleNewClient() {
+  this.isAddingNewClient = !this.isAddingNewClient;
+  
+  const fields = ['nom', 'prenom', 'email', 'telephone'];
+  const clientIdControl = this.clientForm.get('clientId');
+  
+  if (this.isAddingNewClient) {
+    // When switching to new client, clear and disable existing client validation
+    clientIdControl?.clearValidators();
+    clientIdControl?.setValue('');
     
+    // Enable validation for new client fields
     fields.forEach(field => {
       const control = this.clientForm.get(field);
-      if (this.isAddingNewClient) {
-        control?.setValidators([Validators.required]);
-        if (field === 'email') control?.addValidators([Validators.email]);
-      } else {
-        control?.clearValidators();
-      }
+      control?.setValidators([Validators.required]);
+      if (field === 'email') control?.addValidators([Validators.email]);
       control?.updateValueAndValidity();
     });
+  } else {
+    // When switching back to existing client, clear and disable new client fields
+    fields.forEach(field => {
+      const control = this.clientForm.get(field);
+      control?.clearValidators();
+      control?.setValue('');
+      control?.updateValueAndValidity();
+    });
+    
+    // Enable validation for existing client selection
+    clientIdControl?.setValidators([Validators.required]);
   }
+  
+  // Update validity for all affected controls
+  clientIdControl?.updateValueAndValidity();
+  fields.forEach(field => this.clientForm.get(field)?.updateValueAndValidity());
+}
 
   toggleOption(option: OptionType) {
     const index = this.selectedOptions.indexOf(option);

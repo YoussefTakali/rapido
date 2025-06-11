@@ -122,6 +122,8 @@
 .details-section input[type="text"],
 .details-section input[type="number"],
 .details-section input[type="file"],
+.details-section input[type="email"],
+.details-section input[type="tel"],
 .details-section select {
   width: 100%;
   padding: 0.85rem 1.1rem;
@@ -139,6 +141,8 @@
 
 .details-section input[type="text"]:focus,
 .details-section input[type="number"]:focus,
+.details-section input[type="email"]:focus,
+.details-section input[type="tel"]:focus,
 .details-section select:focus {
   border-color: #7f9cf5;
   box-shadow: 0 0 8px rgba(127, 156, 245, 0.5);

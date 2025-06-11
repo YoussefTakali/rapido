@@ -102,9 +102,8 @@ export interface User {
 
 export interface Profile {
   id: number;
-  name: string;
-  email: string;
-  phone: string;
+  companyEmail: string;
+  companyPhone: string;
   companyName: string;
   formeJuridique: string;
   capitalSocial: string;

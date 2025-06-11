@@ -17,7 +17,7 @@ export class MainLayoutComponent implements OnInit {
   constructor(private sidebarService: SidebarService) {}
   user: User = JSON.parse(localStorage.getItem('user') || '{}');
   username: string =  this.user.name
-imageUrl: string = this.user && this.user.profilePicture
+  imageUrl: string = this.user && this.user.profilePicture
   ? `${environment.apiBaseUrl}/uploads/profile-pictures/${this.user.profilePicture}`
   : 'assets/images/default-profile.png';  onSidebarToggle(isVisible: boolean) {
     this.isSidebarVisible = isVisible;

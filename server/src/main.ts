@@ -6,23 +6,29 @@ import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-app.useGlobalPipes(
-  new ValidationPipe({
-    whitelist: true,
-    transform: true,
-    transformOptions: {
-      enableImplicitConversion: true,
-    },
-  }),
-);
-    app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
-    app.enableCors({
-    origin: 'http://localhost:4200',  // your Angular frontend URL
+  // ✅ Enable CORS before anything else
+  app.enableCors({
+    origin: 'http://localhost:4200', // or a dynamic function if needed
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,                // if you need to send cookies/auth headers
+    credentials: true,
   });
-  await app.listen(process.env.PORT ?? 3000);
 
+  // ✅ Validation pipe
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
+
+  // ✅ Serve static files after CORS is enabled
+  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
+
+  await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
+

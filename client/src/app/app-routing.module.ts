@@ -16,10 +16,14 @@ import { ProfileFormComponent } from './pages/profile-form/profile-form.componen
 import { ProfileDetailsComponent } from './pages/profile-details/profile-details.component';
 import { ProfileViewComponent } from './pages/profile-view/profile-view.component';
 import { ActivitiesComponent } from './pages/activities/activities.component';
+import { VolumeCalculatorComponent } from './pages/volume-calculator/volume-calculator.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 const routes: Routes = [
   { path: '', component:MainLayoutComponent,canActivate: [AuthGuard] ,
     children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: DashboardComponent },
       { path: 'devis', component: DevisComponent },
       { path: 'add-devis', component: AddDevisComponent },
       { path: 'clients', component: ClientsComponent },
@@ -31,7 +35,8 @@ const routes: Routes = [
       { path: 'profiles/add', component: ProfileFormComponent },
       { path: 'profiles/:id', component: ProfileDetailsComponent },
       { path: 'myprofile', component: ProfileViewComponent },
-      { path: 'activities', component: ActivitiesComponent }
+      { path: 'activities', component: ActivitiesComponent },
+      { path: 'volume-calculator', component: VolumeCalculatorComponent }
     ]
   },
     { path: 'login', component: LoginComponent },

@@ -45,7 +45,7 @@
             </button>
             <img 
             *ngIf="profile.logo"
-            [src]="'http://localhost:3000/uploads/profilesPDF/' + profile.logo" 
+            [src]="apiBaseUrl+'/uploads/profilesPDF/' + profile.logo" 
             alt="{{ profile.companyName }} Logo"
             class="profile-logo"
             />

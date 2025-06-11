@@ -1,0 +1,78 @@
+<header class="header">
+  <div class="header-container">
+    <div class="header-left">
+      <button 
+        class="mobile-menu-btn"
+        (click)="toggleMobileNav()">
+        <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+      <a routerLink="/dashboard" class="logo">
+        <span class="logo-text">MoveManager</span>
+      </a>
+    </div>
+
+    <nav class="desktop-nav">
+      <a routerLink="/dashboard" 
+         class="nav-link"
+         routerLinkActive="nav-link-active">
+        Dashboard
+      </a>
+      <a routerLink="/quotes" 
+         class="nav-link"
+         routerLinkActive="nav-link-active">
+        Quotes
+      </a>
+      <a routerLink="/clients" 
+         class="nav-link"
+         routerLinkActive="nav-link-active">
+        Clients
+      </a>
+      <a routerLink="/calendar" 
+         class="nav-link"
+         routerLinkActive="nav-link-active">
+        Calendar
+      </a>
+    </nav>
+
+    <div class="header-right">
+      <button class="notification-btn">
+        <svg class="notification-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7H4l5-5v5z"></path>
+        </svg>
+        <span class="notification-badge"></span>
+      </button>
+      <div class="avatar">
+        <span class="avatar-text">A</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation -->
+  <div *ngIf="isMobileNavOpen" class="mobile-nav">
+    <nav class="mobile-nav-content">
+      <a routerLink="/dashboard" 
+         class="mobile-nav-link"
+         (click)="toggleMobileNav()">
+        Dashboard
+      </a>
+      <a routerLink="/quotes" 
+         class="mobile-nav-link"
+         (click)="toggleMobileNav()">
+        Quotes
+      </a>
+      <a routerLink="/clients" 
+         class="mobile-nav-link"
+         (click)="toggleMobileNav()">
+        Clients
+      </a>
+      <a routerLink="/calendar" 
+         class="mobile-nav-link"
+         (click)="toggleMobileNav()">
+        Calendar
+      </a>
+    </nav>
+  </div>
+</header>

@@ -86,7 +86,7 @@ async update(
     return this.prisma.profile.update({
       where: { id },
       data: updateData,
-    });
+    }); 
   }
 
 async remove(id: number) {

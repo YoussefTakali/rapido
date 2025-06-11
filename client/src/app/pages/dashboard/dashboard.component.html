@@ -1,0 +1,17 @@
+<app-dashboard-shell>
+  <div class="grid gap-6">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
+    <app-dashboard-stats></app-dashboard-stats>
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <app-quote-status-chart></app-quote-status-chart>
+      <app-clients-overview></app-clients-overview>
+      <app-notifications-panel></app-notifications-panel>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <app-recent-quotes></app-recent-quotes>
+      <app-upcoming-events></app-upcoming-events>
+    </div>
+  </div>
+</app-dashboard-shell>

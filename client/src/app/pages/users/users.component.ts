@@ -2,6 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { UserProfile } from 'src/app/models/User';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-users',
@@ -11,6 +12,7 @@ import { Router } from '@angular/router';
 
 })
 export class UsersComponent implements OnInit {
+  apiBaseUrl = environment.apiBaseUrl
   users: UserProfile[] = [];
   isLoading = true
   searchTerm = ""

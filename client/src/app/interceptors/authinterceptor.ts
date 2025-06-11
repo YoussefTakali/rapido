@@ -2,11 +2,12 @@ import { HttpClient, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from
 import { Injectable } from "@angular/core";
 import { AuthService } from "../services/auth.service";
 import { catchError, Observable, switchMap, throwError } from "rxjs";
+import { environment } from "src/environments/environment";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService, private http: HttpClient) {}
-
+  apiBaseUrl = environment.apiBaseUrl; // Default to localhost if not set
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Skip authentication for HERE Maps API calls
     if (this.isHereMapsApiCall(req.url)) {
@@ -51,8 +52,8 @@ export class AuthInterceptor implements HttpInterceptor {
     }
 
     // Fix the endpoint URL - it should probably be your backend URL + refresh endpoint
-    const refreshUrl = 'http://localhost:8080/auth/refresh-token'; // Update this to your actual backend URL
-    
+    const refreshUrl = this.apiBaseUrl + '/auth/refresh-token'; // Update this to your actual backend URL
+
     return this.http.post<{ access_token: string; refresh_token?: string }>(refreshUrl, {
       refreshToken,
     }).pipe(

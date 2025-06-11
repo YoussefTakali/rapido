@@ -1,0 +1,57 @@
+.chart-card {
+  background-color: white;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.chart-header {
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+}
+
+.chart-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.25rem 0;
+}
+
+.chart-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.chart-content {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+.chart-container {
+  aspect-ratio: 4/3;
+  position: relative;
+}
+
+.legend {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.legend-color {
+  height: 0.75rem;
+  width: 0.75rem;
+  border-radius: 0.125rem;
+}
+
+.legend-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+}

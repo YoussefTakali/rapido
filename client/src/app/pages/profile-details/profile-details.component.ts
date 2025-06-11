@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { ProfileService } from 'src/app/services/profile.service';
 import { ProfileDetails } from 'src/app/models/Profile';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-profile-details',
@@ -12,6 +13,7 @@ import { ProfileDetails } from 'src/app/models/Profile';
 
 })
 export class ProfileDetailsComponent implements OnInit {
+  apiBaseUrl = environment.apiBaseUrl; // Replace with your actual API base URL
   profileId!: number;
   profile?: ProfileDetails;
   originalProfile?: ProfileDetails; // Store original values for comparison

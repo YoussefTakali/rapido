@@ -1,23 +1,32 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Pipe, PipeTransform } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Devis, EtatDevis, OptionType, TypeLogement, AscenseurType, DistancePortageType, Profile } from 'src/app/models/DevisResponse';
 import { DevisService } from 'src/app/services/devis.service';
 import { Location } from '@angular/common';
-import { DevisFormData, DevisFormUpdate } from 'src/app/models/DevisUpdate';
+import { DevisFormUpdate } from 'src/app/models/DevisUpdate';
+import { environment } from 'src/environments/environment';
+
+
+
 
 @Component({
   selector: 'app-devis-details',
   templateUrl: './devis-details.component.html',
-  styleUrls: ['./devis-details.component.css']
+  styleUrls: ['./devis-details.component.css'],
 })
+
 export class DevisDetailsComponent implements OnInit {
+  apiBaseUrl = environment.apiBaseUrl;
+
   devisId!: number;
   devis?: Devis;
-  originalDevis?: Devis; // Store original values for comparison
+  originalDevis?: Devis;
   loading = true;
   error = '';
   saving = false;
   optionsString: string = '';
+  mappedDevisData: any;
+  companyInfo: any;
 
   // Enum lists for selects
   etatDevisOptions = Object.values(EtatDevis);
@@ -25,7 +34,7 @@ export class DevisDetailsComponent implements OnInit {
   typeLogementOptions = Object.values(TypeLogement);
   ascenseurOptions = Object.values(AscenseurType);
   distancePortageOptions = Object.values(DistancePortageType);
-  distance= 0; // Default distance, can be updated later
+  distance = 0;
   profiles: Profile[] = [];
   isEditing = false;
 
@@ -44,15 +53,32 @@ export class DevisDetailsComponent implements OnInit {
     this.loadDevis();
   }
 
-
+  private mapDevisToMailData(devis: Devis): any {
+    return {
+      id: devis.id.toString(),
+      nom: devis.client?.nom || '',
+      prenom: devis.client?.prenom || '',
+      email: devis.client?.email || '',
+      date_livraison: devis.dateLivraison,
+      total_ttc: devis.prixDevis,
+      // Add any other required fields for DevisData
+    };
+  }
 
   loadDevis() {
     this.loading = true;
     this.devisService.getDevisByDevisId(this.devisId).subscribe({
       next: (data) => {
         this.devis = data;
-        // Store original values for comparison
         this.originalDevis = JSON.parse(JSON.stringify(data));
+
+        // Map data for mail component
+        this.mappedDevisData = this.mapDevisToMailData(data);
+        this.companyInfo = {
+          company_name: data.profile!.companyName,
+          email: data.profile!.companyEmail,
+          cgv_file_path: data.profile!.pdfCgv
+        };
 
         this.optionsString = this.devis.options.join(', ');
         this.devisDateDepartString = this.isoStringToDatetimeLocal(this.devis.dateDepart);
@@ -69,47 +95,37 @@ export class DevisDetailsComponent implements OnInit {
 
   toggleEdit() {
     if (this.isEditing) {
-      // User clicked "Terminer" - check for changes and save
       if (this.hasChanges()) {
         this.saveChanges();
       } else {
         this.isEditing = false;
       }
     } else {
-      // User clicked "Modifier" - enter edit mode
       this.isEditing = true;
     }
   }
 
   hasChanges(): boolean {
     if (!this.devis || !this.originalDevis) return false;
-
-    // Prepare current devis data
     const currentDevis = this.prepareDevisForComparison();
-    
-    // Compare with original
     return JSON.stringify(currentDevis) !== JSON.stringify(this.prepareOriginalForComparison());
   }
 
   prepareDevisForComparison() {
     if (!this.devis) return null;
 
-    // Parse options from string
     const options = this.optionsString
       ? this.optionsString.split(',').map(opt => opt.trim() as OptionType).filter(opt => opt.length > 0)
       : [];
 
-    // Convert dates
     const dateDepart = this.devisDateDepartString ? new Date(this.devisDateDepartString).toISOString() : this.devis.dateDepart;
     const dateLivraison = this.devisDateLivraisonString ? new Date(this.devisDateLivraisonString).toISOString() : this.devis.dateLivraison;
 
     return {
-      // Informations Générales
       volume: this.devis.volume,
       etat: this.devis.etat,
       prixDevis: this.devis.prixDevis,
       options: options,
-      // Départ
       adresseDepart: this.devis.adresseDepart,
       typeLogementDepart: this.devis.typeLogementDepart,
       etageDepart: this.devis.etageDepart,
@@ -117,7 +133,6 @@ export class DevisDetailsComponent implements OnInit {
       distancePortageDepart: this.devis.distancePortageDepart,
       monteMeubleDepart: this.devis.monteMeubleDepart,
       dateDepart: dateDepart,
-      // Livraison
       adresseLivraison: this.devis.adresseLivraison,
       typeLogementLivraison: this.devis.typeLogementLivraison,
       etageLivraison: this.devis.etageLivraison,
@@ -132,12 +147,10 @@ export class DevisDetailsComponent implements OnInit {
     if (!this.originalDevis) return null;
 
     return {
-      // Informations Générales
       volume: this.originalDevis.volume,
       etat: this.originalDevis.etat,
       prixDevis: this.originalDevis.prixDevis,
       options: this.originalDevis.options,
-      // Départ
       adresseDepart: this.originalDevis.adresseDepart,
       typeLogementDepart: this.originalDevis.typeLogementDepart,
       etageDepart: this.originalDevis.etageDepart,
@@ -145,7 +158,6 @@ export class DevisDetailsComponent implements OnInit {
       distancePortageDepart: this.originalDevis.distancePortageDepart,
       monteMeubleDepart: this.originalDevis.monteMeubleDepart,
       dateDepart: this.originalDevis.dateDepart,
-      // Livraison
       adresseLivraison: this.originalDevis.adresseLivraison,
       typeLogementLivraison: this.originalDevis.typeLogementLivraison,
       etageLivraison: this.originalDevis.etageLivraison,
@@ -161,7 +173,6 @@ export class DevisDetailsComponent implements OnInit {
 
     this.saving = true;
 
-    // Update devis object with form values
     this.devis.options = this.optionsString
       ? this.optionsString.split(',').map(opt => opt.trim() as OptionType).filter(opt => opt.length > 0)
       : [];
@@ -173,44 +184,40 @@ export class DevisDetailsComponent implements OnInit {
       this.devis.dateLivraison = new Date(this.devisDateLivraisonString).toISOString();
     }
 
-const cleanDevis : DevisFormUpdate = {
-  volume: this.devis.volume,
-  adresseDepart: this.devis.adresseDepart,
-  typeLogementDepart: this.devis.typeLogementDepart,
-  etageDepart: this.devis.etageDepart,
-  ascenseurDepart: this.devis.ascenseurDepart,
-  distancePortageDepart: this.devis.distancePortageDepart,
-  dateDepart: this.devis.dateDepart,
-  monteMeubleDepart: this.devis.monteMeubleDepart,
-  adresseLivraison: this.devis.adresseLivraison,
-  typeLogementLivraison: this.devis.typeLogementLivraison,
-  etageLivraison: this.devis.etageLivraison,
-  ascenseurLivraison: this.devis.ascenseurLivraison,
-  distancePortageLivraison: this.devis.distancePortageLivraison,
-  dateLivraison: this.devis.dateLivraison,
-  monteMeubleLivraison: this.devis.monteMeubleLivraison,
-  prixDevis: Number(this.devis.prixDevis),  // convert string to number if needed
-  options: this.devis.options,
-  etat: this.devis.etat,
-distance: this.distance ?? 0
-};
+    const cleanDevis: DevisFormUpdate = {
+      volume: this.devis.volume,
+      adresseDepart: this.devis.adresseDepart,
+      typeLogementDepart: this.devis.typeLogementDepart,
+      etageDepart: this.devis.etageDepart,
+      ascenseurDepart: this.devis.ascenseurDepart,
+      distancePortageDepart: this.devis.distancePortageDepart,
+      dateDepart: this.devis.dateDepart,
+      monteMeubleDepart: this.devis.monteMeubleDepart,
+      adresseLivraison: this.devis.adresseLivraison,
+      typeLogementLivraison: this.devis.typeLogementLivraison,
+      etageLivraison: this.devis.etageLivraison,
+      ascenseurLivraison: this.devis.ascenseurLivraison,
+      distancePortageLivraison: this.devis.distancePortageLivraison,
+      dateLivraison: this.devis.dateLivraison,
+      monteMeubleLivraison: this.devis.monteMeubleLivraison,
+      prixDevis: Number(this.devis.prixDevis),
+      options: this.devis.options,
+      etat: this.devis.etat,
+      distance: this.distance ?? 0
+    };
 
-// Send cleanDevis to backend instead of full devis
-    this.devisService.updateDevis(this.devis.id,cleanDevis).subscribe({
+    this.devisService.updateDevis(this.devis.id, cleanDevis).subscribe({
       next: (updatedDevis) => {
-        // Update local data
         this.devis = updatedDevis;
         this.originalDevis = JSON.parse(JSON.stringify(updatedDevis));
+        this.mappedDevisData = this.mapDevisToMailData(updatedDevis);
         
-        // Update display strings
         this.optionsString = this.devis!.options.join(', ');
         this.devisDateDepartString = this.isoStringToDatetimeLocal(this.devis!.dateDepart);
         this.devisDateLivraisonString = this.isoStringToDatetimeLocal(this.devis!.dateLivraison);
         
         this.saving = false;
         this.isEditing = false;
-        
-        // Optional: Show success message
         console.log('Devis updated successfully');
       },
       error: (error) => {
@@ -224,7 +231,6 @@ distance: this.distance ?? 0
   cancelEdit() {
     if (!this.originalDevis) return;
 
-    // Restore original values
     this.devis = JSON.parse(JSON.stringify(this.originalDevis));
     this.optionsString = this.devis!.options.join(', ');
     this.devisDateDepartString = this.isoStringToDatetimeLocal(this.devis!.dateDepart);
@@ -247,4 +253,5 @@ distance: this.distance ?? 0
     const pad = (n: number) => n.toString().padStart(2, '0');
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
+  
 }

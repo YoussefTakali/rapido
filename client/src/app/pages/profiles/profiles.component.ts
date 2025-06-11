@@ -2,6 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProfileDetails } from 'src/app/models/Profile';
 import { ProfileService } from 'src/app/services/profile.service';
+import { environment } from 'src/environments/environment';
 
 interface ProfileSummary {
   id: number;
@@ -22,6 +23,7 @@ interface ProfileSummary {
 
 })
 export class ProfileDashboardComponent implements OnInit {
+  apiBaseUrl = environment.apiBaseUrl // Replace with your actual API base URL
   profiles: ProfileDetails[] = [];
   profileSummaries: ProfileSummary[] = [];
   loading = true;

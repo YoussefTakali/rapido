@@ -3,6 +3,8 @@ import { UserProfile } from "./User";
 
 export interface ProfileDetails {
   id: number;
+  companyEmail: string;
+  companyPhone: string;
   companyName: string;
   formeJuridique: string;
   capitalSocial: string;

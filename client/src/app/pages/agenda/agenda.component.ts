@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { CalendarView } from 'angular-calendar';
 import { ApiCalendarEvent, CalendarEventService, MyCalendarEvent } from 'src/app/services/calendar-event.service';
 
@@ -49,8 +49,8 @@ export class AgendaComponent implements OnInit {
       title: ['', Validators.required],
       description: [''],
       location: [''],
-      startDateTime: ['', Validators.required],
-      endDateTime: ['', Validators.required],
+startDateTime: ['', [Validators.required, this.timeWithinBusinessHours]],
+endDateTime: ['', [Validators.required, this.timeWithinBusinessHours]],
       isAllDay: [false],
       recurrence: ['NONE'],
       reminderMinutes: [15, [Validators.min(0)]],
@@ -319,6 +319,17 @@ openEventDetails(event: MyCalendarEvent) {
 
 closeEventDetails() {
   this.selectedEvent = null;
+}
+
+timeWithinBusinessHours(control: AbstractControl): ValidationErrors | null {
+  const dateValue = new Date(control.value);
+  if (isNaN(dateValue.getTime())) return null; // ignore if not a valid date
+
+  const hours = dateValue.getHours();
+  if (hours < 7 || hours > 17) {
+    return { outsideBusinessHours: true };
+  }
+  return null;
 }
 
 }

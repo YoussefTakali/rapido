@@ -5,6 +5,10 @@ export class CreateProfileDto {
   @IsString()
   companyName: string;
 
+  @IsEmail()
+  companyEmail: string;
+  @IsString()
+  companyPhone: string;
   @IsString()
   formeJuridique: string;
 

@@ -25,16 +25,18 @@ export class ProfileFormComponent {
   constructor(private _formBuilder: FormBuilder,private profileService: ProfileService ,private router:Router ) {}
 
   ngOnInit() {
-    this.companyFormGroup = this._formBuilder.group({
-      companyName: ['', Validators.required],
-      formeJuridique: ['', Validators.required],
-      capitalSocial: ['', [Validators.required, Validators.min(0)]],
-      siret: ['', Validators.required],
-      tva: ['', Validators.required],
-      rcsOuRm: ['', Validators.required],
-      adresse: ['', Validators.required],
-      logo: ['']
-    });
+this.companyFormGroup = this._formBuilder.group({
+  companyName: ['', Validators.required],
+  formeJuridique: ['', Validators.required],
+  capitalSocial: ['', [Validators.required, Validators.min(0)]],
+  siret: ['', Validators.required],
+  companyEmail: ['', [Validators.required, Validators.email]],  // Added email with validation
+  companyPhone: ['', Validators.required],  // Added phone
+  tva: ['', Validators.required],
+  rcsOuRm: ['', Validators.required],
+  adresse: ['', Validators.required],
+  logo: ['']
+});
 
     this.assuranceFormGroup = this._formBuilder.group({
       nomAssurance: ['', Validators.required],
@@ -111,10 +113,13 @@ submitForm() {
     const formData = new FormData();
 
     // Append normal text fields (make sure to convert numbers to strings)
-    formData.append('companyName', this.companyFormGroup.value.companyName); // added companyName
+    formData.append('companyName', this.companyFormGroup.value.companyName);
     formData.append('formeJuridique', this.companyFormGroup.value.formeJuridique);
     formData.append('capitalSocial', this.companyFormGroup.value.capitalSocial.toString());
     formData.append('siret', this.companyFormGroup.value.siret);
+    formData.append('companyEmail', this.companyFormGroup.value.companyEmail);  // Added
+    formData.append('companyPhone', this.companyFormGroup.value.companyPhone);  // Added
+    console.log('companyPhone', this.companyFormGroup.value.companyPhone);
     formData.append('tva', this.companyFormGroup.value.tva);
     formData.append('rcsOuRm', this.companyFormGroup.value.rcsOuRm);
     formData.append('adresse', this.companyFormGroup.value.adresse);
@@ -141,6 +146,7 @@ submitForm() {
       error: (error) => {
         console.error('Error submitting form:', error);
         alert('Une erreur est survenue lors de la soumission du formulaire.');
+        console.error('Error details:', formData);
       }
     });
   } else {

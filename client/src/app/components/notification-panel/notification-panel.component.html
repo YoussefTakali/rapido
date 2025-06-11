@@ -1,0 +1,23 @@
+<div class="notifications-card">
+  <div class="notifications-header">
+    <h3 class="notifications-title">Recent Notifications</h3>
+    <p class="notifications-description">You have {{ notifications.length }} unread notifications</p>
+  </div>
+  <div class="notifications-content">
+    <div class="notifications-list">
+      <div *ngFor="let notification of notifications" class="notification-item">
+        <div class="notification-icon-wrapper">
+          <div class="notification-icon" [innerHTML]="notification.icon"></div>
+        </div>
+        <div class="notification-content">
+          <p class="notification-message">{{ notification.message }}</p>
+          <p class="notification-time">{{ notification.time }}</p>
+        </div>
+      </div>
+<a class="view-all-notifications-btn" routerLink="/activities">
+  View All Notifications
+</a>
+
+    </div>
+  </div>
+</div>

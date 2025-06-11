@@ -389,3 +389,117 @@ button:active {
 
 /* Make sure Font Awesome is loaded */
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+#devis-content {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 0.9rem;
+  color: #333;
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  background-color: #ddd;
+  color: #333;
+}
+
+.status-en-attente {
+  background-color: #ffc107;
+  color: #fff;
+}
+.status-accepte {
+  background-color: #28a745;
+  color: #fff;
+}
+.status-refuse {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.details-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.details-table th,
+.details-table td {
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  vertical-align: middle;
+  text-align: left;
+}
+
+.details-table thead th {
+  background-color: #f4f6f8;
+  border-bottom: 2px solid #ddd;
+  font-weight: 600;
+}
+
+.details-table tbody tr:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+
+.details-table tfoot td {
+  background-color: #f9f9f9;
+  font-weight: bold;
+}
+
+ul {
+  padding-left: 1.2rem;
+  line-height: 1.6;
+}
+
+h6 {
+  font-size: 1rem;
+  color: #495057;
+  margin-bottom: 0.3rem;
+}
+
+p, li {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 0.3rem;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+.border {
+  border-top: 1px solid #ccc !important;
+}
+
+.mt-4 {
+  margin-top: 1.5rem !important;
+}
+.mb-2 {
+  margin-bottom: 1rem !important;
+}
+.px-3 {
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+.rounded {
+  border-radius: 8px !important;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ccc;
+}
+
+#total-ht,
+#tva,
+#total-ttc {
+  text-align: right;
+}

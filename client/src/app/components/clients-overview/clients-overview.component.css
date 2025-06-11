@@ -1,0 +1,32 @@
+.clients-card {
+  background-color: white;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.clients-header {
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+}
+
+.clients-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.25rem 0;
+}
+
+.clients-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.clients-content {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+.chart-container {
+  aspect-ratio: 4/3;
+  position: relative;
+}

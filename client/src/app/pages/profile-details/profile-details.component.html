@@ -34,7 +34,18 @@
         <span *ngIf="!isEditing">{{ profile.siret }}</span>
         <input *ngIf="isEditing" type="text" [(ngModel)]="profile.siret" />
       </p>
+  <p class="field-group">
+        <label>Email de l'entreprise:</label>
+        <span *ngIf="!isEditing">{{ profile.companyEmail }}</span>
+        <input *ngIf="isEditing" type="email" [(ngModel)]="profile.companyEmail" />
+      </p>
 
+      <!-- Added companyPhone field -->
+      <p class="field-group">
+        <label>Téléphone de l'entreprise:</label>
+        <span *ngIf="!isEditing">{{ profile.companyPhone }}</span>
+        <input *ngIf="isEditing" type="tel" [(ngModel)]="profile.companyPhone" />
+      </p>
       <p class="field-group">
         <label>TVA:</label>
         <span *ngIf="!isEditing">{{ profile.tva }}</span>
@@ -56,7 +67,7 @@
       <p class="field-group">
         <label>Logo:</label>
         <span *ngIf="!isEditing">
-          <img *ngIf="profile.logo" [src]="'http://localhost:3000/uploads/profilesPDF/'+profile.logo" alt="Logo" style="max-width: 100px;" />
+          <img *ngIf="profile.logo" [src]="apiBaseUrl+'/uploads/profilesPDF/'+profile.logo" alt="Logo" style="max-width: 100px;" />
           <span *ngIf="!profile.logo">Aucun logo</span>
         </span>
         <input *ngIf="isEditing" type="file" (change)="onLogoChange($event)" accept="image/*" />
@@ -117,7 +128,7 @@
       <p class="field-group">
         <label>CGV (PDF):</label>
         <span *ngIf="!isEditing">
-          <a *ngIf="profile.pdfCgv" [href]="'http://localhost:3000/uploads/profilesPDF/'+profile.pdfCgv" target="_blank">Voir CGV</a>
+          <a *ngIf="profile.pdfCgv" [href]="apiBaseUrl+'/uploads/profilesPDF/'+profile.pdfCgv" target="_blank">Voir CGV</a>
           <span *ngIf="!profile.pdfCgv">Aucun fichier CGV</span>
         </span>
         <input *ngIf="isEditing" type="file" (change)="onPdfCgvChange($event)" accept=".pdf" />

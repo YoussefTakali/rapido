@@ -35,7 +35,7 @@
           <div class="avatar-wrapper">
             <img
               *ngIf="user.profilePicture && !imageError"
-  [src]="'http://localhost:3000/uploads/profile-pictures/' + user.profilePicture"               [alt]="user.name"
+              [src]="apiBaseUrl + '/uploads/profile-pictures/' + user.profilePicture"               [alt]="user.name"
               (error)="onImageError()"
               (load)="onImageLoad()"
               class="avatar-img"

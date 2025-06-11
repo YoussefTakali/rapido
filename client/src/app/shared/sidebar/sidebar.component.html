@@ -16,6 +16,10 @@
 <i class="fas fa-calendar-day s-icon"></i>
         <div class="s-link-text">Agenda</div>
       </li>
+            <li class="s-link" [routerLink]="'/volume-calculator'" routerLinkActive="active">
+  <i class="fas fa-cube s-icon"></i>
+        <div class="s-link-text">Volume Calculator</div>
+      </li>
       <li class="s-link" *ngIf="isAdmin()" [routerLink]="'/profiles'" routerLinkActive="active">
         <i class="fas fa-building s-icon"></i>
         <div class="s-link-text">Profiles</div>

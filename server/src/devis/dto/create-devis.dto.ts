@@ -8,6 +8,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateDevisDto {
   @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
   distance?: number;
   @IsNumber()
   userId: number;

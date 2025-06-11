@@ -29,6 +29,17 @@
                 Ce champ est obligatoire
               </div>
             </div>
+            <div class="form-group">
+              <label for="companyEmail">Email de la société *</label>
+              <input type="email" id="companyEmail" formControlName="companyEmail">
+              <div class="error-message" *ngIf="companyFormGroup.get('companyEmail')?.hasError('required') && companyFormGroup.get('companyEmail')?.touched">
+                Ce champ est obligatoire
+              </div>
+              <div class="error-message" *ngIf="companyFormGroup.get('companyEmail')?.hasError('email') && companyFormGroup.get('companyEmail')?.touched">
+                Veuillez entrer un email valide
+              </div>
+            </div>
+
 
             <div class="form-group">
               <label for="formeJuridique">Forme juridique *</label>
@@ -85,7 +96,13 @@
                 Ce champ est obligatoire
               </div>
             </div>
-
+            <div class="form-group">
+              <label for="companyPhone">Téléphone de la société *</label>
+              <input type="tel" id="companyPhone" formControlName="companyPhone">
+              <div class="error-message" *ngIf="companyFormGroup.get('companyPhone')?.hasError('required') && companyFormGroup.get('companyPhone')?.touched">
+                Ce champ est obligatoire
+              </div>
+            </div>
             <div class="form-group">
               <label for="logo">Logo (optionnel)</label>
               <input type="file" id="logo" (change)="handleLogoUpload($event)" accept="image/*">
