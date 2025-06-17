@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCalendarEventDto } from './dto/create-calendar-event.dto';
 import { UpdateCalendarEventDto } from './dto/update-calendar.dto';
-import { EventStatus } from 'generated/prisma';
+import { EventStatus } from '@prisma/client';
 
 @Injectable()
 export class CalendarEventService {

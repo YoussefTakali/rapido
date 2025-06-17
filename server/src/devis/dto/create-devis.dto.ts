@@ -3,7 +3,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Prisma } from '@prisma/client';
-import { AscenseurType, DistancePortageType, EtatDevis, OptionType, TypeLogement } from 'generated/prisma';
+import { AscenseurType, DistancePortageType, EtatDevis, OptionType, TypeLogement } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateDevisDto {

@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Put, Patch, Param, Get, Delete, Query } from '@nestjs/common';
 import { CalendarEventService } from './calendar-event.service';
 import { CreateCalendarEventDto } from './dto/create-calendar-event.dto';
-import { EventStatus } from 'generated/prisma';
+import { EventStatus } from '@prisma/client';
 import { UpdateCalendarEventDto } from './dto/update-calendar.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 

@@ -6,7 +6,7 @@ import { CreateUserDto } from './dto/create.user.dto';
 import { UpdateUserDto } from './dto/update.user.dto';
 import { ConflictException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-
+import * as fs from 'fs';
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
@@ -47,9 +47,44 @@ export class UserService {
     return user;
   }
 
-  async update(id: number, updateUserDto:UpdateUserDto) {
-    return this.prisma.user.update({ where: { id }, data: updateUserDto });
+async update(id: number, updateData: Partial<UpdateUserDto>) {
+  // Get current user to check for old profile picture and email uniqueness
+  const currentUser = await this.prisma.user.findUnique({ where: { id } });
+  if (!currentUser) throw new NotFoundException('User not found');
+
+  // Check if email is being changed to one that already exists
+  if (updateData.email && updateData.email !== currentUser.email) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: updateData.email },
+    });
+    if (existingUser) {
+      throw new ConflictException('Email already in use by another user');
+    }
   }
+
+  // Delete old picture if it exists and isn't the default
+  if (updateData.profilePicture && 
+      currentUser.profilePicture && 
+      currentUser.profilePicture !== 'defaultpp.jpg') {
+    try {
+      fs.unlinkSync(`./uploads/profile-pictures/${currentUser.profilePicture}`);
+    } catch (err) {
+      console.error('Failed to delete old profile picture', err);
+    }
+  }
+
+  // Update allowed fields
+  return this.prisma.user.update({
+    where: { id },
+    data: {
+      name: updateData.name,
+      email: updateData.email,
+      phoneNumber: updateData.phoneNumber,
+      dateOfBirth: updateData.dateOfBirth ? new Date(updateData.dateOfBirth) : null,
+      profilePicture: updateData.profilePicture || currentUser.profilePicture
+    }
+  });
+}
 
 async remove(id: number) {
   // Step 1: Delete related records
@@ -79,7 +114,31 @@ async remove(id: number) {
     where: { id },
   });
 }
+  async updateProfilePicture(userId: number, filename: string) {
+    // First get the user to check current picture
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId }
+    });
 
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Delete old picture if it exists and isn't the default
+    if (user.profilePicture && user.profilePicture !== 'defaultpp.jpg') {
+      try {
+        fs.unlinkSync(`./uploads/profile-pictures/${user.profilePicture}`);
+      } catch (err) {
+        console.error('Failed to delete old profile picture', err);
+      }
+    }
+
+    // Update with new filename
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { profilePicture: filename },
+    });
+  }
 async assignProfilesToUser(assignProfiles: AssignProfilesDto): Promise<{ message: string }> {
   // First, optionally verify user exists
   const user = await this.prisma.user.findUnique({ where: { id: assignProfiles.userId } });

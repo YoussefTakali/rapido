@@ -3,7 +3,7 @@ import {
   IsString, IsOptional, IsBoolean, IsEnum,
   IsDateString, IsInt, Min
 } from 'class-validator';
-import { EventStatus, RecurrenceType } from 'generated/prisma';
+import { EventStatus, RecurrenceType } from '@prisma/client';
 
 export class CreateCalendarEventDto {
   @IsInt()

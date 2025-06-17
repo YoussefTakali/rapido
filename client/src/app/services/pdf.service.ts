@@ -50,7 +50,7 @@ export class PdfService {
     try {
       const canvas = await html2canvas(clonedElement, {
         useCORS: true,
-        scale: 2, // Higher scale for better text quality
+        scale: 3, // Increased from 2 to 3 for much better text quality
         allowTaint: false,
         backgroundColor: '#ffffff',
         width: clonedElement.scrollWidth,
@@ -64,7 +64,9 @@ export class PdfService {
         ignoreElements: (element) => {
           // Skip elements that might cause issues
           return element.tagName === 'SCRIPT' || element.tagName === 'NOSCRIPT';
-        }
+        },
+        // Force better DPI for text
+        // Better text rendering
       });
 
       // Validate canvas
@@ -72,8 +74,8 @@ export class PdfService {
         throw new Error('Canvas creation failed - element may be empty');
       }
 
-      // Convert to high quality JPEG with better compression
-      const imageData = canvas.toDataURL('image/jpeg', 0.98);
+      // Convert to high quality JPEG with maximum quality
+      const imageData = canvas.toDataURL('image/jpeg', 1.0); // Changed from 0.98 to 1.0 for maximum quality
       
       if (!imageData || imageData.length < 100) {
         throw new Error('Failed to generate image from canvas');
@@ -159,7 +161,7 @@ export class PdfService {
       try {
         const canvas = await html2canvas(clonedElement, {
           useCORS: true,
-          scale: 2,
+          scale: 3, // Increased scale for better quality
           allowTaint: false,
           backgroundColor: '#ffffff',
           width: newWidth,
@@ -176,8 +178,8 @@ export class PdfService {
           throw new Error('Canvas creation failed - generated canvas has no dimensions');
         }
 
-        // Convert to JPEG
-        const imageData = canvas.toDataURL('image/jpeg', 0.98);
+        // Convert to JPEG with maximum quality
+        const imageData = canvas.toDataURL('image/jpeg', 1.0);
         
         if (!imageData || imageData.length < 100) {
           throw new Error('Failed to generate image from canvas');
@@ -208,24 +210,63 @@ export class PdfService {
   private async createVisibleClone(element: HTMLElement): Promise<HTMLElement> {
     const clone = element.cloneNode(true) as HTMLElement;
     
-    // Apply styles to make clone render properly with better text scaling
+    // Apply styles to make clone render properly with much better text scaling
     clone.style.cssText += `
       position: absolute !important;
       left: -9999px !important;
       top: 0 !important;
-      width: 100% !important;
+      width: 210mm !important;
+      min-width: 210mm !important;
+      max-width: 210mm !important;
       height: auto !important;
-      transform: scale(1) !important;
-      zoom: 1 !important;
-      font-size: inherit !important;
-      line-height: inherit !important;
+      transform: none !important;
+      zoom: 1.5 !important;
+      font-size: 16px !important;
+      line-height: 1.6 !important;
       display: block !important;
       visibility: visible !important;
       opacity: 1 !important;
       overflow: visible !important;
-      max-width: none !important;
-      max-height: none !important;
+      padding: 20px !important;
+      margin: 0 !important;
+      box-sizing: border-box !important;
     `;
+    
+    // Force all text elements to have readable sizes
+    const allElements = clone.querySelectorAll('*');
+    allElements.forEach((el: any) => {
+      const computedStyle = window.getComputedStyle(el);
+      const currentFontSize = parseFloat(computedStyle.fontSize);
+      
+      // Ensure minimum font sizes for readability
+      if (el.tagName === 'H1' || el.tagName === 'H2') {
+        el.style.fontSize = '24px !important';
+        el.style.fontWeight = 'bold !important';
+      } else if (el.tagName === 'H3' || el.tagName === 'H4') {
+        el.style.fontSize = '20px !important';
+        el.style.fontWeight = 'bold !important';
+      } else if (el.tagName === 'H5' || el.tagName === 'H6') {
+        el.style.fontSize = '18px !important';
+        el.style.fontWeight = 'bold !important';
+      } else if (el.tagName === 'P' || el.tagName === 'LI' || el.tagName === 'TD' || el.tagName === 'TH') {
+        if (currentFontSize < 14) {
+          el.style.fontSize = '14px !important';
+        }
+        el.style.lineHeight = '1.6 !important';
+      }
+      
+      // Force table elements to have proper sizing
+      if (el.tagName === 'TABLE') {
+        el.style.width = '100% !important';
+        el.style.fontSize = '14px !important';
+      }
+      
+      if (el.tagName === 'TD' || el.tagName === 'TH') {
+        el.style.padding = '8px 12px !important';
+        el.style.fontSize = '14px !important';
+        el.style.border = '1px solid #ddd !important';
+      }
+    });
     
     clone.className += ' pdf-clone';
     document.body.appendChild(clone);
@@ -233,23 +274,27 @@ export class PdfService {
     // Force layout recalculation
     clone.offsetHeight;
     
+    // Wait for fonts to apply
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
     return clone;
   }
 
   private async createPdfFromImage(imageData: string, canvasWidth: number, canvasHeight: number): Promise<Blob> {
+    // Use A4 format with better scaling
     const pdf = new jsPDF('p', 'mm', 'a4');
     
-    // Use full A4 dimensions with minimal margins
-    const pageWidth = 210; // A4 width in mm
-    const pageHeight = 297; // A4 height in mm
-    const margin = 5; // Small margin for better appearance
-    const maxWidth = pageWidth - (margin * 2); // Use almost full width
-    const maxHeight = pageHeight - (margin * 2); // Use almost full height
+    // A4 dimensions in mm
+    const pageWidth = 210;
+    const pageHeight = 297;
+    const margin = 10; // Reasonable margin
+    const maxWidth = pageWidth - (margin * 2);
+    const maxHeight = pageHeight - (margin * 2);
     
     // Calculate aspect ratio
     const aspectRatio = canvasWidth / canvasHeight;
     
-    // Start with full width utilization
+    // Calculate dimensions to fit content properly
     let imgWidth = maxWidth;
     let imgHeight = maxWidth / aspectRatio;
     
@@ -259,40 +304,63 @@ export class PdfService {
       imgWidth = maxHeight * aspectRatio;
     }
     
-    // Position with minimal margins (left-aligned for better text readability)
-    const xPos = margin;
+    // Center the content
+    const xPos = (pageWidth - imgWidth) / 2;
     const yPos = margin;
     
     try {
-      // Add image to PDF with higher quality
-      pdf.addImage(imageData, 'JPEG', xPos, yPos, imgWidth, imgHeight, undefined, 'FAST');
+      // Add image to PDF with maximum quality settings
+      pdf.addImage(
+        imageData, 
+        'JPEG', 
+        xPos, 
+        yPos, 
+        imgWidth, 
+        imgHeight, 
+        undefined, 
+        'FAST' // Use FAST compression for better quality
+      );
       
       // Handle multi-page content if needed
-      if (canvasHeight > canvasWidth * 1.5) { // If content is very tall
-        const pagesNeeded = Math.ceil(imgHeight / maxHeight);
+      const contentHeightInMM = (canvasHeight * imgWidth) / canvasWidth;
+      
+      if (contentHeightInMM > maxHeight) {
+        const pagesNeeded = Math.ceil(contentHeightInMM / maxHeight);
         
-        if (pagesNeeded > 1) {
-          // Split content across multiple pages
-          const pageContentHeight = canvasHeight / pagesNeeded;
+        for (let page = 1; page < pagesNeeded; page++) {
+          pdf.addPage();
           
-          for (let page = 1; page < pagesNeeded; page++) {
-            pdf.addPage();
-            
-            // Create a new canvas for this page section
-            const pageCanvas = document.createElement('canvas');
-            pageCanvas.width = canvasWidth;
-            pageCanvas.height = pageContentHeight;
-            
-            const ctx = pageCanvas.getContext('2d');
-            if (ctx) {
-              const img = new Image();
+          // Calculate the portion of the image for this page
+          const pageStartY = (page * maxHeight * canvasWidth) / imgWidth;
+          const pageHeight = Math.min(maxHeight, contentHeightInMM - (page * maxHeight));
+          
+          // Create canvas for this page section
+          const pageCanvas = document.createElement('canvas');
+          pageCanvas.width = canvasWidth;
+          pageCanvas.height = (pageHeight * canvasWidth) / imgWidth;
+          
+          const ctx = pageCanvas.getContext('2d');
+          if (ctx) {
+            const img = new Image();
+            await new Promise<void>((resolve) => {
               img.onload = () => {
-                ctx.drawImage(img, 0, -page * pageContentHeight);
-                const pageImageData = pageCanvas.toDataURL('image/jpeg', 0.98);
-                pdf.addImage(pageImageData, 'JPEG', xPos, yPos, imgWidth, maxHeight, undefined, 'FAST');
+                ctx.drawImage(
+                  img, 
+                  0, 
+                  pageStartY, 
+                  canvasWidth, 
+                  pageCanvas.height,
+                  0, 
+                  0, 
+                  canvasWidth, 
+                  pageCanvas.height
+                );
+                const pageImageData = pageCanvas.toDataURL('image/jpeg', 1.0);
+                pdf.addImage(pageImageData, 'JPEG', xPos, yPos, imgWidth, pageHeight, undefined, 'FAST');
+                resolve();
               };
               img.src = imageData;
-            }
+            });
           }
         }
       }
@@ -316,7 +384,7 @@ export class PdfService {
       if (img.complete) return Promise.resolve();
       
       return new Promise<void>((resolve) => {
-        const timer = setTimeout(() => resolve(), 3000); // 3s timeout
+        const timer = setTimeout(() => resolve(), 5000); // Increased timeout
         img.onload = img.onerror = () => {
           clearTimeout(timer);
           resolve();
@@ -326,8 +394,8 @@ export class PdfService {
     
     await Promise.all(imagePromises);
     
-    // Small delay to ensure rendering is complete
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Longer delay to ensure all fonts and styles are applied
+    await new Promise(resolve => setTimeout(resolve, 1000));
   }
 
   async fetchPdfBlob(url: string): Promise<Blob> {
@@ -364,7 +432,7 @@ export class PdfService {
     console.log('Visibility:', computedStyle.visibility);
     console.log('Opacity:', computedStyle.opacity);
     console.log('Position:', computedStyle.position);
-    console.log('Z-Index:', computedStyle.zIndex);
+    console.log('Font-size:', computedStyle.fontSize);
     
     // Check parents
     let parent = element.parentElement;
@@ -374,7 +442,8 @@ export class PdfService {
       console.log(`Parent ${level}:`, parent.tagName, {
         display: parentStyle.display,
         visibility: parentStyle.visibility,
-        opacity: parentStyle.opacity
+        opacity: parentStyle.opacity,
+        fontSize: parentStyle.fontSize
       });
       parent = parent.parentElement;
       level++;

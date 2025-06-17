@@ -111,7 +111,7 @@
             <div class="detail-content">
               <span class="detail-label">Birthday</span>
               <span class="detail-value">
-                <!-- {{ user.dateOfBirth | date: 'MMMM d, yyyy' }} ({{ getAge(new Date(user.dateOfBirth)) }} years old) -->
+                {{ user.dateOfBirth | date: 'MMMM d, yyyy' }} ({{ getAge(user.dateOfBirth) }} years old)
               </span>
             </div>
           </div>

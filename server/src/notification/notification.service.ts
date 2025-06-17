@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { NotificationType } from 'generated/prisma';
+import { NotificationType } from '@prisma/client';
 import { NotificationGateway } from './notification.gateway';
 
 @Injectable()

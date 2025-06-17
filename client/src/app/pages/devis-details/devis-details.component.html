@@ -190,18 +190,20 @@
 
 <!-- ...existing code... -->
 
-<div id="devis-content" *ngIf="devis" style="width: 100%!important; background-color: white; font-family: Arial, sans-serif; display: none;">
+<!-- Remove the problematic inline styles and replace with better ones -->
+<div id="devis-content" *ngIf="devis" style="width: 100%; background-color: white; font-family: Arial, sans-serif; display: none;">
   <style>
   #devis-content {
-    font-size: 18px !important;
-    line-height: 1.6 !important;
+    font-size: 16px; /* Removed !important - let PDF scaling work naturally */
+    line-height: 1.6;
     letter-spacing: 0.3px;
     color: #333;
     padding: 20px;
+    min-width: 800px; /* Ensure minimum width for better rendering */
   }
 
   #devis-content ul li {
-    font-size: 16px !important;
+    font-size: 16px; /* Removed !important */
     line-height: 1.6;
     margin-bottom: 8px;
   }
@@ -210,7 +212,7 @@
   #devis-content li {
     line-height: 1.6;
     letter-spacing: 0.2px;
-    font-size: 16px!important;
+    font-size: 16px; /* Removed !important */
   }
 
   .details-table th,
@@ -218,35 +220,58 @@
     height: auto;
     padding: 12px 16px;
     border-bottom: 1px solid #ddd;
-    font-size: 16px!important;
+    font-size: 16px; /* Removed !important */
     vertical-align: top;
     letter-spacing: 0.2px;
   }
 
   h5 {
-    font-size: 28px!important;
+    font-size: 28px; /* Removed !important */
     margin-bottom: 16px;
     line-height: 1.4;
     font-weight: bold;
   }
 
   h6 {
-    font-size: 20px!important;
+    font-size: 20px; /* Removed !important */
     margin-bottom: 12px;
     line-height: 1.4;
     font-weight: bold;
   }
 
   .border {
-    border-top: 2px solid #ddd !important;
+    border-top: 2px solid #ddd;
     margin-bottom: 20px;
   }
 
   .footer {
-    font-size: 12px!important;
+    font-size: 14px; /* Increased from 12px and removed !important */
     letter-spacing: 0.1px;
     line-height: 1.4;
     color: #777;
+  }
+
+  /* Better table styling for PDF */
+  .details-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+  }
+
+  .details-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+    border: 1px solid #ddd;
+  }
+
+  .details-table td {
+    border: 1px solid #ddd;
+  }
+
+  /* Ensure images scale properly */
+  img {
+    max-width: 100%;
+    height: auto;
   }
 </style>
 
@@ -258,7 +283,7 @@
            class="p-1 rounded" alt="Company Logo">
     </div>
     <div class="col-6 text-end">
-      <h5 style="font-size: 28px; margin-bottom: 10px;">DEVIS N°{{ devis.id | number:'6.0' }}</h5>
+      <h5>DEVIS N°{{ devis.id | number:'6.0' }}</h5>
       <p style="font-size: 18px; font-weight: bold;">Émis le: {{ devis.date | date:'mediumDate' }}</p>
     </div>
   </div>
@@ -268,8 +293,8 @@
   <!-- Company and Client Info -->
   <div class="row mb-4 px-1">
     <div class="col-sm-6">
-      <h6 style="font-size: 20px; font-weight: bold; color: #333;">ÉMETTEUR / EXÉCUTANT</h6>
-      <p style="font-size: 16px; color: #555;">
+      <h6>ÉMETTEUR / EXÉCUTANT</h6>
+      <p>
         <strong>Société:</strong> {{ devis.profile?.companyName }}<br>
         <strong>SIRET:</strong> {{ devis.profile?.siret }}<br>
         <strong>Adresse:</strong> {{ devis.profile?.adresse }}<br>
@@ -278,8 +303,8 @@
       </p>
     </div>
     <div class="col-sm-6">
-      <h6 style="font-size: 20px; font-weight: bold; color: #333;">CLIENT</h6>
-      <p style="font-size: 16px; color: #555;">
+      <h6>CLIENT</h6>
+      <p>
         <strong>{{ devis.client?.prenom }} {{ devis.client?.nom }}</strong><br>
         <strong>Adresse:</strong> {{ devis.adresseDepart }}<br>
         <strong>Téléphone:</strong> {{ devis.client?.telephone }}<br>
@@ -291,8 +316,8 @@
   <!-- Loading and Delivery Info -->
   <div class="row mb-4 px-2">
     <div class="col-sm-6">
-      <h6 style="font-size: 18px; font-weight: bold; color: #333;">CHARGEMENT</h6>
-      <p style="font-size: 16px; color: #555;">
+      <h6>CHARGEMENT</h6>
+      <p>
         <strong>Date:</strong> {{ devis.dateDepart | date:'mediumDate' }}<br>
         <strong>Type de logement:</strong> {{ devis.typeLogementDepart }}<br>
         <strong>Adresse:</strong> {{ devis.adresseDepart }}<br>
@@ -303,8 +328,8 @@
       </p>
     </div>
     <div class="col-sm-6">
-      <h6 style="font-size: 18px; font-weight: bold; color: #333;">LIVRAISON</h6>
-      <p style="font-size: 16px; color: #555;">
+      <h6>LIVRAISON</h6>
+      <p>
         <strong>Date:</strong> {{ devis.dateLivraison | date:'mediumDate' }}<br>
         <strong>Type de logement:</strong> {{ devis.typeLogementLivraison }}<br>
         <strong>Adresse:</strong> {{ devis.adresseLivraison }}<br>
@@ -317,8 +342,8 @@
   </div>
 
   <!-- Services Included -->
-  <h6 style="font-size: 18px; font-weight: bold; color: #333; margin-top: 2rem;">PRESTATIONS INCLUSES</h6>
-  <ul style="font-size: 16px; color: #555; padding-left: 25px;">
+  <h6>PRESTATIONS INCLUSES</h6>
+  <ul>
     <li>Manutention au chargement et déchargement de <strong>{{ devis.volume }} m³</strong></li>
     <li>Transport spécial sur <strong>{{ devis.distance || '' }} km</strong> / Arrimage acheminement</li>
     <li>Déménagement <strong>{{ devis.typeLogementDepart }}</strong></li>
@@ -327,13 +352,13 @@
     <li>Mise en penderie / Remise en armoire du linge sur cintres</li>
     <li>Déballage du mobilier et remise en place dans les pièces indiquées par le client</li>
   </ul>
-  <p style="font-size: 16px; font-weight: bold; color: #555; margin-bottom: 20px;">
+  <p style="font-weight: bold; margin-bottom: 20px;">
     Toute prestation non incluse sera soumise à l'approbation du déménageur et susceptible d'engendrer un supplément.
   </p>
 
   <!-- Insurance -->
-  <h6 style="font-size: 18px; font-weight: bold; color: #333; margin-bottom: 12px;">ASSURANCE</h6>
-  <p style="font-size: 16px; color: #555; margin-bottom: 20px;">
+  <h6>ASSURANCE</h6>
+  <p style="margin-bottom: 20px;">
     • <strong>{{ devis.profile?.nomAssurance }}</strong><br>
     • Valeur totale du mobilier: <strong>{{ devis.profile?.montantMobilier }} €</strong><br>
     • Maximum par objet: <strong>{{ devis.profile?.montantMaxParObjet }} €</strong><br>
@@ -341,7 +366,7 @@
   </p>
   
   <!-- Pricing Table -->
-  <table class="table details-table" style="width: 100%; margin-bottom: 30px;">
+  <table class="details-table">
     <thead>
       <tr>
         <th style="width: 5%;">#</th>
@@ -376,26 +401,26 @@
   </table>
 
   <!-- Notes Section -->
-  <div style="page-break-inside: avoid;">
-    <h6 style="font-size: 20px; font-weight: bold; color: #333; margin-bottom: 15px;">NOTES</h6>
-    <p style="font-size: 16px; color: #555; margin-bottom: 15px;">
+  <div style="page-break-inside: avoid; margin-top: 30px;">
+    <h6>NOTES</h6>
+    <p style="margin-bottom: 15px;">
       Attention : la date indiquée pour votre déménagement ne s'accompagne pas d'un horaire précis. Votre déménagement et la livraison auront lieu le jour indiqué, dans les créneaux horaires nécessaires pour terminer le déménagement.
     </p>
-    <p style="font-size: 16px; color: #555; margin-bottom: 15px;">
+    <p style="margin-bottom: 15px;">
       Ne vous engagez pas à remettre vos clés en partant le jour même à un horaire précis (par exemple, le milieu de journée). Le déménagement peut durer plus longtemps. Nous vous recommandons une remise de clés en soirée ou le lendemain.
     </p>
-    <p style="font-size: 16px; color: #555; margin-bottom: 25px;">
+    <p style="margin-bottom: 25px;">
       En signant ce devis vous attestez avoir pris connaissance des conditions générales de vente et les accepter.
     </p>
 
     <div style="margin-top: 40px;">
-      <p style="font-size: 16px; color: #555;">Fait à ____________________, le ____________________</p>
-      <p style="font-size: 16px; color: #555; margin-top: 50px;">Signature :</p>
+      <p>Fait à ____________________, le ____________________</p>
+      <p style="margin-top: 50px;">Signature :</p>
     </div>
   </div>
 
   <!-- Footer -->
-  <div style="margin-top: 40px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; color: #777;">
+  <div class="footer" style="margin-top: 40px; padding-top: 15px; border-top: 1px solid #ddd;">
     <p>
       Société par actions simplifiée au capital de 1000 - Nanterre B 983 616 939<br>
       SIRET: 98361903900010 - N° de TVA FR589836816939<br>
@@ -403,7 +428,3 @@
     </p>
   </div>
 </div>
-
-<!-- ...existing code... -->
-
-<!-- ...existing code... -->

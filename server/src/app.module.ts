@@ -17,6 +17,6 @@ import { MailModule } from './mail/mail.module';
       isGlobal: true, 
     }), UserModule, ProfileModule, ClientModule, DevisModule, CalendarEventModule,NotificationModule, MailModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService], 
 }) 
 export class AppModule {}

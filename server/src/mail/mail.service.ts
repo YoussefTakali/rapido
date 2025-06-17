@@ -10,13 +10,19 @@ export class MailService {
   private readonly logger = new Logger(MailService.name);
   private stripe: Stripe;
 
-  constructor() {
-    // Initialize Stripe
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2025-05-28.basil",
-    });
+constructor() {
+  const stripeKey = process.env.STRIPE_API_KEY;
+  
+  if (!stripeKey) {
+    throw new Error('STRIPE_SECRET_KEY environment variable is not set');
   }
-
+  
+  // Initialize Stripe
+  this.stripe = new Stripe(stripeKey, {
+    apiVersion: "2025-05-28.basil",
+  });
+}
+ 
 private createTransporter() {
    console.log('SMTP_HOST:', process.env.SMTP_HOST);
   console.log('SMTP_USER:', process.env.SMTP_USER);
@@ -36,6 +42,8 @@ private createTransporter() {
 
   async createStripePaymentSession(totalTtc: number): Promise<string> {
     try {
+       console.log(process.env.STRIPE_SECRET_KEY);
+
       const session = await this.stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [

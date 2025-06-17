@@ -43,6 +43,7 @@ import { UpcomingEventsComponent } from './components/upcoming-events/upcoming-e
 import { ClientsOverviewComponent } from './components/clients-overview/clients-overview.component';
 import { QuoteStatusChartComponent } from './components/quote-status-chart/quote-status-chart.component';
 import { NotificationPanelComponent } from './components/notification-panel/notification-panel.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -90,7 +91,8 @@ import { NotificationPanelComponent } from './components/notification-panel/noti
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatProgressSpinnerModule
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
   bootstrap: [AppComponent]

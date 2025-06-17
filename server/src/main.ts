@@ -9,7 +9,7 @@ async function bootstrap() {
 
   // ✅ Enable CORS before anything else
   app.enableCors({
-    origin: 'http://localhost:4200', // or a dynamic function if needed
+    origin: '*', // or a dynamic function if needed
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });

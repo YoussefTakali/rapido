@@ -12,7 +12,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
 import { JwtService } from '@nestjs/jwt';
-import { NotificationType, Role } from 'generated/prisma';
+import { NotificationType, Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { AuthResponseDto } from './dto/auth-response.dto';

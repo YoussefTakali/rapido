@@ -16,7 +16,7 @@ export interface UserProfile {
   createdAt?: string;          // ISO string date
   skills?: string[];
   profiles?: Profile[]; // Array of Profile objects
-socialLinks?: {
+  socialLinks?: {
     twitter?: string;
     linkedin?: string;
     github?: string;
