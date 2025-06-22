@@ -1,8 +1,7 @@
-// mail.service.ts (Angular Service)
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { environment } from "src/environments/environment";
 
 export interface DevisMailRequest {
   clientName: string;
@@ -13,6 +12,7 @@ export interface DevisMailRequest {
   companyEmail: string;
   totalTtc?: number;
   totalM: number;
+  additionalFileName?: string;  // Add this line
 }
 
 @Injectable({
@@ -29,6 +29,7 @@ export class MailService {
       pdf1: Blob;
       pdf2: Blob;
       pdf3?: Blob;
+      pdf4?: Blob;  // Add this line for the additional file
     }
   ): Observable<any> {
     const formData = new FormData();
@@ -36,8 +37,16 @@ export class MailService {
     // Append PDF files
     formData.append('pdf1', files.pdf1, 'devis.pdf');
     formData.append('pdf2', files.pdf2, 'cgv.pdf');
+    
     if (files.pdf3) {
       formData.append('pdf3', files.pdf3, 'ListeMobilier.pdf');
+    }
+    
+    if (files.pdf4) {
+      // Use the original file name for the additional file
+      const fileName = (files.pdf4 as File).name || 'DocumentSupplementaire.pdf';
+      formData.append('pdf4', files.pdf4, fileName);
+      mailData.additionalFileName = fileName;  // Send the file name in the form data
     }
     
     // Append form data
@@ -47,9 +56,7 @@ export class MailService {
         formData.append(key, value.toString());
       }
     });
-    console.log('Mail data:', mailData);
-formData.forEach((value, key) => {
-  console.log(key, value);
-});    return this.http.post(`${this.apiUrl}/send-devis`, formData);
+    
+    return this.http.post(`${this.apiUrl}/send-devis`, formData);
   }
 }

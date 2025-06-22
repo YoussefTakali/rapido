@@ -24,7 +24,19 @@ export interface CompanyProfile {
   template: `
     <div class="mail-controls">
       <h3>Envoyer le devis par email</h3>
-      
+        <div class="file-selection">
+    <label class="file-input-label">
+      <input type="file" (change)="onFileSelected($event)" accept=".pdf" #fileInput hidden>
+      <span class="file-input-button">
+        <i class="fas fa-paperclip"></i>
+        {{ selectedFile ? selectedFile.name : 'Ajouter un fichier PDF' }}
+      </span>
+    </label>
+    <button *ngIf="selectedFile" class="remove-file-btn" (click)="removeFile()">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
       <div class="button-group">
         <button 
           class="btn btn-primary"
@@ -69,11 +81,49 @@ export interface CompanyProfile {
   `,
   styles: [`
     .mail-controls {
-      background: #f8f9fa;
-      padding: 20px;
-      border-radius: 8px;
-      margin: 20px 0;
-    }
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+  }
+  
+  .file-selection {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .file-input-label {
+    cursor: pointer;
+  }
+  
+  .file-input-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+  }
+  
+  .file-input-button:hover {
+    background-color: #dee2e6;
+  }
+  
+  .remove-file-btn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 16px;
+  }
+  
+  .remove-file-btn:hover {
+    color: #c82333;
+  }
     
     .button-group {
       display: flex;
@@ -148,7 +198,7 @@ export class DevisMailComponent implements OnInit {
   @Input() devisContentElementId: string = 'devis-content';
   
   isLoading = false;
-
+  selectedFile: File | null = null;
   constructor(
     private mailService: MailService,
     private pdfService: PdfService,
@@ -163,7 +213,21 @@ export class DevisMailComponent implements OnInit {
       console.log('CompanyProfile:', this.companyProfile);
     }
   }
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      if (file.type === 'application/pdf') {
+        this.selectedFile = file;
+      } else {
+        alert('Veuillez sélectionner un fichier PDF');
+      }
+    }
+  }
 
+  removeFile(): void {
+    this.selectedFile = null;
+  }
   async sendMail(includePayment: boolean, includeMobilier: boolean) {
     if (this.isLoading) return;
     
