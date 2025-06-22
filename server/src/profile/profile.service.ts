@@ -73,8 +73,25 @@ async update(
   ): Promise<Profile> {
     await this.findOne(id);
 
-    const updateData: any = { ...data };
-
+ const updateData: any = {
+  ...data,
+  capitalSocial: Number(data.capitalSocial),
+  montantMobilier: Number(data.montantMobilier),
+  montantMaxParObjet: Number(data.montantMaxParObjet),
+  franchise: Number(data.franchise),
+  pourcentageAcompte: Number(data.pourcentageAcompte),
+  companyName: data.companyName,
+  companyEmail: data.companyEmail,
+  companyPhone: data.companyPhone,
+  formeJuridique: data.formeJuridique,
+  siret: data.siret,
+  tva: data.tva,
+  rcsOuRm: data.rcsOuRm,
+  adresse: data.adresse,
+  nomAssurance: data.nomAssurance,
+  bic: data.bic,
+  iban: data.iban,
+};
     if (pdfCgvFile) {
       updateData.pdfCgv = pdfCgvFile.filename;
     }
