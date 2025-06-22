@@ -131,6 +131,8 @@ export class ProfileDetailsComponent implements OnInit {
     
     // Add all fields to FormData
     formData.append('companyName', this.profile.companyName);
+     formData.append('companyEmail', this.profile.companyEmail || ''); // Add this
+    formData.append('companyPhone', this.profile.companyPhone || '');
     formData.append('formeJuridique', this.profile.formeJuridique);
     formData.append('capitalSocial', this.profile.capitalSocial.toString());
     formData.append('siret', this.profile.siret);
