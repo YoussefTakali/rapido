@@ -153,9 +153,16 @@ export class ProfileDetailsComponent implements OnInit {
     if (this.pdfCgvFile) {
       formData.append('pdfCgv', this.pdfCgvFile);
     }
-
+    const formDataEntries: any = {};
+    for (let [key, value] of (formData as any).entries()) {
+      if (value instanceof File) {
+        formDataEntries[key] = `[File: ${value.name}, Size: ${value.size} bytes, Type: ${value.type}]`;
+      } else {
+        formDataEntries[key] = value;
+      }
+    }
     this.profileService.updateProfile(this.profileId, formData).subscribe({
-      next: (updatedProfile) => {
+      next: (updatedProfile) => { 
         this.profile = updatedProfile;
         this.originalProfile = JSON.parse(JSON.stringify(updatedProfile));
         this.saving = false;
