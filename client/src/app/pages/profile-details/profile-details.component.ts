@@ -153,6 +153,7 @@ export class ProfileDetailsComponent implements OnInit {
     if (this.pdfCgvFile) {
       formData.append('pdfCgv', this.pdfCgvFile);
     }
+    console.log("-----formdata--------")
     const formDataEntries: any = {};
     for (let [key, value] of (formData as any).entries()) {
       if (value instanceof File) {
